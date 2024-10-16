@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.timecard {
+    height: 20rem;
+    width: auto;
+}
+
+.gradient {
+
+    background: linear-gradient(to top, red, blue),
+    linear-gradient(to right, #5affb2, #61efff);
+    background-blend-mode: overlay;
+}
+
+.gradient2 {
+
+    background: linear-gradient(to top, red, blue),
+    linear-gradient(to right, #f6cdbc, #baddf2);
+    background-blend-mode: overlay;
+}
+
+.custom-font-style {
+    margin-left: 1rem;
+    line-height: 1.35;
+}
+
+.text-wrapper {
+    margin-top: 9rem;
+}
+
+.bg-1 {
+    background-image: url(/public/images/backgrounds/annie-spratt-aauZUpeKOTE-unsplash.jpg);
+    background-position: center;
+    background-size: cover;
+}
+.bg-2  {
+    background-image: url(/public/images/backgrounds/carlos-MrfOUghIAJ0-unsplash.jpg);
+    background-position: center;
+    background-size: cover;
+}
+.bg-3 {
+    background-image: url(/public/images/backgrounds/kevin-mueller-NzoJDM2CmH0-unsplash.jpg);
+    background-position: center;
+    background-size: cover;
+}
+.bg-4 {
+    background-image: url(/public/images/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg);
+    background-position: center;
+    background-size: cover;
+}
+
+.custom-btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    padding: 0.3rem 1rem 0.3rem 1rem;
+    background: #6366f1;
+    color: white;
+}
