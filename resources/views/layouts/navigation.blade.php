@@ -94,7 +94,8 @@
               id="user-menu-button">
               <span class="absolute -inset-1.5"></span>
               <span class="sr-only">Open user menu</span>
-              <img class="h-8 w-8 rounded-full" src="/images/profile_pic/me.jpg" alt="Profile picture">
+              {{-- <img class="h-8 w-8 rounded-full" src="/images/profile_pic/me.jpg" alt="Profile picture"> --}}
+              <img class="h-8 w-8 rounded-full" src="{{ url('uploads/profile_pictures/me.jpg') }}" alt="Profile picture">
             </button>
           </div>
 

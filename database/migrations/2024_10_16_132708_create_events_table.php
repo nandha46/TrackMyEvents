@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('event_name');
             $table->dateTime('event_date');
             $table->string('event_type');
+            $table->enum('fields', ['days', 'months', 'years', 'hours','weeks','minutes','workdays','seconds']);
+            $table->boolean('is_background_image');
+            $table->string('background');
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });

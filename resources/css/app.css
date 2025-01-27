@@ -36,23 +36,15 @@
 
 .bg-1 {
     background-image: url(/public/images/backgrounds/annie-spratt-aauZUpeKOTE-unsplash.jpg);
-    background-position: center;
-    background-size: cover;
 }
 .bg-2  {
     background-image: url(/public/images/backgrounds/carlos-MrfOUghIAJ0-unsplash.jpg);
-    background-position: center;
-    background-size: cover;
 }
 .bg-3 {
     background-image: url(/public/images/backgrounds/kevin-mueller-NzoJDM2CmH0-unsplash.jpg);
-    background-position: center;
-    background-size: cover;
 }
 .bg-4 {
     background-image: url(/public/images/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg);
-    background-position: center;
-    background-size: cover;
 }
 
 .custom-btn {
@@ -62,5 +54,9 @@
     padding: 0.3rem 1rem 0.3rem 1rem;
     background: #6366f1;
     color: white;
+}
+
+.text-shadow {
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 /*  */

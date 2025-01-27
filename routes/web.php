@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Event;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,7 +9,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $events = Event::where('user_id', 1)->get();
+    $data = ['events' => $events];
+    return view('dashboard', $data);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
