@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'event_type' => 'Personal',
             'is_background_image' => false,
             'background' => 'gradient',
-            'fields' => 'days'
+            'fields' => 'days, months'
         ]);
         Event::create([
             'user_id' => 1,

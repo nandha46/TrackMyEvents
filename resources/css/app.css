@@ -34,19 +34,6 @@
     margin-top: 9rem;
 }
 
-.bg-1 {
-    background-image: url(/public/images/backgrounds/annie-spratt-aauZUpeKOTE-unsplash.jpg);
-}
-.bg-2  {
-    background-image: url(/public/images/backgrounds/carlos-MrfOUghIAJ0-unsplash.jpg);
-}
-.bg-3 {
-    background-image: url(/public/images/backgrounds/kevin-mueller-NzoJDM2CmH0-unsplash.jpg);
-}
-.bg-4 {
-    background-image: url(/public/images/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg);
-}
-
 .custom-btn {
     border-radius: 0.5rem;
     font-weight: 600;
