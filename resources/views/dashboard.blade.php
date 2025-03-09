@@ -2,6 +2,9 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                @if(count($events) < 1)
+                    <h1 class="px-2 py-2 text-center text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">No Events</h1>
+                @else
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="mt-10 grid gap-2 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
                         @foreach ($events as $event)
@@ -22,6 +25,7 @@
                         @endforeach
                     </div>
                 </div>
+                @endif
             </div>
         </div>
 </x-app-layout>
