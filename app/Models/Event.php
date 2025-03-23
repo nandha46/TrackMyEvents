@@ -31,18 +31,18 @@ class Event extends Model
     }
 
     public function getYears () : int {
-        return Carbon::parse($this->event_date)->diffInYears(null, true);
+        return (int) Carbon::parse($this->event_date)->diffInYears(null, true);
     }
     
     public function getMonths () : int {
-        return Carbon::parse($this->event_date)->addYear($this->getYears())->diffInMonths(null, true);
+        return (int) Carbon::parse($this->event_date)->addYear($this->getYears())->diffInMonths(null, true);
     }
     public function getDays () : int {
-        return Carbon::parse($this->event_date)->addYear($this->getYears())->addMonth($this->getMonths())->diffInDays(null, true);
+        return (int) Carbon::parse($this->event_date)->addYear($this->getYears())->addMonth($this->getMonths())->diffInDays(null, true);
     }
     
     public function getTime () : int {
-        return Carbon::parse($this->event_date)->addYear($this->getYears())->addMonth($this->getMonths())->addDays($this->getDays())->diffInHours();
+        return (int) Carbon::parse($this->event_date)->addYear($this->getYears())->addMonth($this->getMonths())->addDays($this->getDays())->diffInHours();
     }
 
     protected function eventDate (): Attribute {

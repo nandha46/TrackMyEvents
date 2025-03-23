@@ -95,25 +95,26 @@
               <span class="absolute -inset-1.5"></span>
               <span class="sr-only">Open user menu</span>
               {{-- <img class="h-8 w-8 rounded-full" src="/images/profile_pic/me.jpg" alt="Profile picture"> --}}
-              <img class="h-8 w-8 rounded-full" src="{{ url('uploads/profile_pictures/me.jpg') }}" alt="Profile picture">
+              <img class="h-8 w-8 rounded-full" src="{{ url('uploads/profile_pictures/me.jpg') }}"
+                alt="Profile picture">
             </button>
           </div>
 
-          <div x-show="profileMenuOpen" @click.away="profileMenuOpen = false" 
+          <div x-show="profileMenuOpen" @click.away="profileMenuOpen = false"
             class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             x-transition:enter="transition ease-out duration-100"
             x-transition:enter-start="transform opacity-0 scale-95"
             x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="transform opacity-100 scale-100"
-            x-transition:leave-end="transform opacity-0 scale-95"
-            >
+            x-transition:leave-end="transform opacity-0 scale-95">
             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
               tabindex="-1" id="user-menu-item-0">Your Profile</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
               id="user-menu-item-1">Settings</a>
             <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
+            <a href="#" id="logout-user" onclick="event.preventDefault();"
+              class="block px-4 py-2 text-sm text-gray-700">Sign out POST</a>
           </div>
-
         </div>
       </div>
     </div>
@@ -121,9 +122,9 @@
 
   <!-- Mobile menu, show/hide based on menu state. -->
   <div class="sm:hidden" id="mobile-menu" x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
-  x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95"
-  x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-200"
-  x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
+    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95"
+    x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
     <div class="space-y-1 px-2 pb-3 pt-2">
       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
       <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"

@@ -1,15 +1,16 @@
 {
-    "name": "laravel/laravel",
+    "name": "nandha/trackmyevents",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Event tracking and reminder application",
+    "keywords": ["laravel", "event tracking", "reminder"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.9",
+        "laravel/framework": "^11",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.15",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.2",
         "laravel/pint": "^1.13",
