@@ -32,7 +32,7 @@
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex flex-shrink-0 items-center">
-          <img class="h-8 w-auto" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+          <img class="h-8 w-auto" src="{{ url("/logo_tme.png") }}"
             alt="Your Company">
         </div>
         <div class="hidden sm:ml-6 sm:block">
@@ -74,6 +74,12 @@
           </button>
           <x-modals.form />
         </div>
+        <a href="{{ route('event.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center inline-block">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+  </svg>
+  Add New Event
+</a>
         <button type="button"
           class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
           <span class="absolute -inset-1.5"></span>

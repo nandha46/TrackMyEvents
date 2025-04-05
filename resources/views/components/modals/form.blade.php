@@ -25,29 +25,32 @@
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
               <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Add New Event</h3>
-              <form class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg space-y-40" x-data="{ showImageUpload: false, imagePreview: null, gradientStart: '#ff0000', gradientEnd: '#0000ff' }">
+              <form class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg space-y-40"
+                method="POST" action="{{ route('event.store') }}"
+                x-data="{ showImageUpload: false, imagePreview: null, gradientStart: '#ff0000', gradientEnd: '#0000ff' }">
+                @csrf
                 <!-- Name -->
                 <div>
                   <label class="block text-gray-700">Event Name</label>
-                  <input type="text" class="w-full p-2 border rounded-md" placeholder="Enter your name" />
+                  <input type="text" name="event_name" class="w-full p-2 border rounded-md" placeholder="Enter your name" />
                 </div>
 
                 <!-- Date and Time Side by Side -->
                 <div class="flex space-x-4">
                   <div class="w-1/2">
                     <label class="block text-gray-700">Date</label>
-                    <input type="date" class="w-full p-2 border rounded-md" />
+                    <input type="date" name="event_date" class="w-full p-2 border rounded-md" />
                   </div>
                   <div class="w-1/2">
                     <label class="block text-gray-700">Time</label>
-                    <input type="time" class="w-full p-2 border rounded-md" />
+                    <input type="time" name="event_time" class="w-full p-2 border rounded-md" />
                   </div>
                 </div>
 
                 <!-- Dropdown -->
                 <div>
                   <label class="block text-gray-700">Event Type</label>
-                  <select class="w-full p-2 border rounded-md">
+                  <select class="w-full p-2 border rounded-md" name="event_type">
                     <option>Personal</option>
                     <option>Work</option>
                     <option>Reminder</option>
@@ -59,7 +62,7 @@
                   <label class="block text-gray-700">Choose Fields</label>
                   <div class="flex space-x-4">
                     <label class="flex items-center space-x-2">
-                      <input type="checkbox" class="form-checkbox" />
+                      <input type="checkbox" class="form-checkbox" name="fields"/>
                       <span>Minutes</span>
                     </label>
                     <label class="flex items-center space-x-2">
@@ -77,7 +80,7 @@
                 <div>
                   <label class="block text-gray-700">Select Background</label>
                   <label class="flex items-center cursor-pointer">
-                    <input type="checkbox" x-model="showImageUpload" class="sr-only peer">
+                    <input type="checkbox" name="is_background_image" x-model="showImageUpload" class="sr-only peer">
                     <div
                       class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-blue-500 relative before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 before:transition-transform before:duration-300 peer-checked:before:translate-x-5">
                     </div>
@@ -85,22 +88,23 @@
                 </div>
 
                 <!-- Gradient Picker -->
-  <div x-show="!showImageUpload">
-    <label class="block text-gray-700">Select Gradient</label>
-    <div class="flex space-x-2">
-      <div class="w-1/2">
-        <label class="block text-gray-600 text-sm">Start Color</label>
-        <input type="color" x-model="gradientStart" class="w-full h-10 p-2 border rounded-md" />
-      </div>
-      <div class="w-1/2">
-        <label class="block text-gray-600 text-sm">End Color</label>
-        <input type="color" x-model="gradientEnd" class="w-full h-10 p-2 border rounded-md" />
-      </div>
-    </div>
-    <div class="mt-2 w-full h-10 rounded-md border" :style="'background: linear-gradient(to right, ' + gradientStart + ', ' + gradientEnd + ')'">
-    </div>
+                <div x-show="!showImageUpload">
+                  <label class="block text-gray-700">Select Gradient</label>
+                  <div class="flex space-x-2">
+                    <div class="w-1/2">
+                      <label class="block text-gray-600 text-sm">Start Color</label>
+                      <input type="color" name="background" x-model="gradientStart" class="w-full h-10 p-2 border rounded-md" />
+                    </div>
+                    <div class="w-1/2">
+                      <label class="block text-gray-600 text-sm">End Color</label>
+                      <input type="color" x-model="gradientEnd" class="w-full h-10 p-2 border rounded-md" />
+                    </div>
+                  </div>
+                  <div class="mt-2 w-full h-10 rounded-md border"
+                    :style="'background: linear-gradient(to right, ' + gradientStart + ', ' + gradientEnd + ')'">
+                  </div>
 
-  </div>
+                </div>
 
                 <!-- Image Upload -->
                 <div x-show="showImageUpload">
@@ -116,7 +120,7 @@
                 </div>
 
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="button"
+                  <button type="submit"
                     class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto">Create</button>
                   <button type="button" @click="open = false"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>

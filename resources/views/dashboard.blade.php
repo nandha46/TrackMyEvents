@@ -6,24 +6,39 @@
                     <h1 class="px-2 py-2 text-center text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">No Events</h1>
                 @else
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="mt-10 grid gap-2 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-                        @foreach ($events as $event)
-                        <div @class(['timecard', $event->background => ! $event->is_background_image, 'bg-cover
-                            bg-center' => $event->is_background_image]) @if($event->is_background_image)
-                            style="background-image:url('{{url($event->background)}}')" @endif>
-                            <div class="text-wrapper">
-                                <p class="text-4xl text-white custom-font-style">{{ $event->event_name }}</p>
-                                <p class="text-2xl text-zinc-500 custom-font-style">{{ $event->event_date }}</p>
-                                <p class="text-3xl text-white custom-font-style"> {{$event->getYears()}}<span>Y</span>
+                   
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+@foreach($events as $event)
+@if($event->is_background_image)
+  <div class="relative aspect-w-1 aspect-h-1">
+    <div data-loading="true" class="absolute inset-0 bg-gray-200 animate-pulse"></div>
+    <img src="{{ url($event->background) }}" alt="Image 1" class="w-full h-full object-cover" loading="lazy">
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white bg-black bg-opacity-50">
+      <h2 class="text-xl font-semibold mb-2">{{ $event->event_name }}</h2>
+      <h2 class="text-xl font-semibold mb-2">{{ $event->event_date }}</h2>
+      <p class="text-3xl text-white custom-font-style"> {{$event->getYears()}}<span>Y</span>
                                     {{$event->getMonths()}}<span>M</span> {{$event->getDays()}}<span>D</span> </p>
-                                @if($event->isPastEvent())
+    @if($event->isPastEvent())
                                 <p class="text-2xl text-white text-shadow custom-font-style">
                                     &LeftAngleBracket;Since&RightAngleBracket;</p>
                                 @endif
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
+    </div>
+  </div>
+@else
+  <div class="py-16 aspect-w-1 aspect-h-1 bg-gradient-to-r from-purple-500 to-indigo-600 flex flex-col justify-center items-center text-center text-white">
+    <h2 class="text-2xl font-bold mb-4">{{ $event->event_name }}</h2>
+    <h2 class="text-xl font-semibold mb-2">{{ $event->event_date }}</h2>
+      <p class="text-3xl text-white custom-font-style"> {{$event->getYears()}}<span>Y</span>
+                                    {{$event->getMonths()}}<span>M</span> {{$event->getDays()}}<span>D</span> </p>
+    @if($event->isPastEvent())
+                                <p class="text-2xl text-white text-shadow custom-font-style">
+                                    &LeftAngleBracket;Since&RightAngleBracket;</p>
+                                @endif
+  </div>
+  @endif
+  @endforeach
+</div>
                 </div>
                 @endif
             </div>
