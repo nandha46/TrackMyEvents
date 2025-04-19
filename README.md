@@ -13,6 +13,11 @@
 Built with a focus on functionality, ease of use, and accessibility, TrackMyEvents is your go-to app for managing time-sensitive events.
 
 ## Technologies used
- - Laravel
- - Bootstrap 5
- - jQuery
+ - Laravel 11
+ - MySQL 8.0
+ - Tailwind 3.1.0
+ - Alpine.js
+ - Google smtp email
+ - Slack
+ - Sentry Integration
+ - Google OAuth

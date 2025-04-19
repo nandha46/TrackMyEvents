@@ -1,13 +1,14 @@
 {
     "name": "nandha46/trackmyevents",
     "type": "project",
-    "description": "Event tracking and reminder application",
+    "description": "Track My Events is a sleek and versatile app designed to help you track both past and upcoming events. Whether you're planning future milestones or reflecting on past memories, TrackMyEvents gives you an intuitive interface to log, view, and manage your important moments.",
     "keywords": ["laravel", "event tracking", "reminder"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11",
         "laravel/slack-notification-channel": "^3.5",
+        "laravel/socialite": "^5.19",
         "laravel/tinker": "^2.9",
         "opcodesio/log-viewer": "^3.15",
         "sentry/sentry-laravel": "^4.13"

@@ -25,5 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        Integration::handles($exceptions);
+        if(app()->isProduction()){
+            Integration::handles($exceptions);
+        }
     })->create();

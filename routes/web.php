@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ProfileController;
 use App\Mail\TestMail;
 use App\Models\Event;
@@ -25,6 +26,12 @@ Route::get('/test-notification', function () {
     $event = Event::first();
     $user->notify(new EventAdded($event));
     return "Notification sent";
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
+    Route::get('/api/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
 });
 
 Route::middleware(['auth', 'verified', 'logger'])->group(function () {
