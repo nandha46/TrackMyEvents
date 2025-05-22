@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
     ];
 
     /**
@@ -32,6 +33,15 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    /**
+     * The model's default values
+     * 
+     * @var array
+     */
+    protected $attributes = [
+        'avatar' => 'default.jpg'
     ];
 
     /**
@@ -55,4 +65,7 @@ class User extends Authenticatable
         return '#campaign';
     }
 
+    public function events () {
+        return $this->hasMany(Event::class);
+    }
 }

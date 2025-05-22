@@ -7,6 +7,7 @@ use App\Models\User;
 use DateTime;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,8 +20,9 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'id' => 1,
             'name' => 'Nandha',
-            'email' => 'nandha@mail.com',
-            'password' => '$2y$12$cixxaYdnFGxB7W3qqfDOleeo1lYTHZLTrrE0pFCFNgQxXrOw4x0eO'
+            'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+            'avatar' => 'me.jpg',
         ]);
         
         User::factory(10)->create();
@@ -49,25 +51,25 @@ class DatabaseSeeder extends Seeder
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg',
+            'background' => '7.jpg',
             'fields' => 'months'
         ]);
         Event::create([
             'user_id' => 1,
-            'event_name' => 'Chennai DayOne',
+            'event_name' => 'Gym DayOne',
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/carlos-MrfOUghIAJ0-unsplash.jpg',
+            'background' => '6.jpg',
             'fields' => 'days'
         ]);
         Event::create([
             'user_id' => 1,
-            'event_name' => 'First AC',
+            'event_name' => 'First International Trip',
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/kevin-mueller-NzoJDM2CmH0-unsplash.jpg',
+            'background' => '5.jpg',
             'fields' => 'days'
         ]);
         Event::create([
@@ -76,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg',
+            'background' => '4.jpg',
             'fields' => 'years'
         ]);
         Event::create([
@@ -85,16 +87,16 @@ class DatabaseSeeder extends Seeder
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/carlos-MrfOUghIAJ0-unsplash.jpg',
+            'background' => '3.jpg',
             'fields' => 'days'
         ]);
         Event::create([
             'user_id' => 1,
-            'event_name' => 'New Car : Renault',
+            'event_name' => 'Bought New Car',
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/annie-spratt-aauZUpeKOTE-unsplash.jpg',
+            'background' => '2.jpg',
             'fields' => 'days'
         ]);
         Event::create([
@@ -103,7 +105,7 @@ class DatabaseSeeder extends Seeder
             'event_date' => new DateTime('24-06-2020'),
             'event_type' => 'Personal',
             'is_background_image' => true,
-            'background' => 'uploads/backgrounds/patrick-langwallner-nLhAXKQAp6A-unsplash.jpg',
+            'background' => '1.jpg',
             'fields' => 'days'
         ]);
     }

@@ -42,12 +42,19 @@
               aria-current="page">Personal</a>
             <a href="#"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Work</a>
-            <a href="#"
+            {{-- <a href="#"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reminder</a>
             <a href="#"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Past</a>
             <a href="#"
-              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Future</a>
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Future</a> --}}
+            <a href="{{ url('/telescope') }}"
+              class="flex rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+              <x-Icons.tools /> <span>Telescope </span>
+              <x-Icons.chevron-down /> </span>
+            </a>
+            <a href="{{ url('/pulse') }}"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Pulse</a>
           </div>
         </div>
       </div>
@@ -56,40 +63,22 @@
           <label class="relative block">
             <span class="sr-only">Search</span>
             <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg class="h-5 w-5 fill-slate-300" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clip-rule="evenodd"></path>
-              </svg>
+              <x-Icons.magnify />
             </span>
             <input
               class="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
               placeholder="Search for anything..." type="text" name="search" />
           </label>
         </div>
-        <div x-data="{open: false}" class="mr-4" x-cloak>
-          <button @click=" open =! open; console.log(open);" class="button custom-btn">
-            <span>+</span>
-            New Event
-          </button>
-          <x-modals.form />
-        </div>
-        <a href="{{ route('event.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center inline-block">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-  </svg>
-  Add New Event
+        <a href="{{ route('event.create') }}" class="mr-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded flex items-center inline-block">
+  <x-Icons.plus />
+  New Event
 </a>
         <button type="button"
           class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
           <span class="absolute -inset-1.5"></span>
           <span class="sr-only">View notifications</span>
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            aria-hidden="true" data-slot="icon">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0">
-            </path>
-          </svg>
+          <x-Icons.bell />
         </button>
 
         <!-- Profile dropdown -->
@@ -100,8 +89,7 @@
               id="user-menu-button">
               <span class="absolute -inset-1.5"></span>
               <span class="sr-only">Open user menu</span>
-              {{-- <img class="h-8 w-8 rounded-full" src="/images/profile_pic/me.jpg" alt="Profile picture"> --}}
-              <img class="h-8 w-8 rounded-full" src="{{ url('uploads/profile_pictures/me.jpg') }}"
+              <img class="h-8 w-8 rounded-full" src="{{ asset('uploads/profile_pictures/'.Auth::user()->avatar) }}"
                 alt="Profile picture">
             </button>
           </div>
@@ -118,8 +106,6 @@
             <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
               id="user-menu-item-1">Settings</a>
             <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
-            <a href="#" id="logout-user" onclick="event.preventDefault();"
-              class="block px-4 py-2 text-sm text-gray-700">Sign out POST</a>
           </div>
         </div>
       </div>

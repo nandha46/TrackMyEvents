@@ -37,6 +37,11 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
+    public function updateAvatar(Request $request):RedirectResponse
+    {
+        return Redirect::route('profile.edit')->with('status', 'profile-avatar-updated');
+    }
+
     /**
      * Delete the user's account.
      */

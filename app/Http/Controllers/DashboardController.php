@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function show(Request $request): View
     {
         $user = $request->user();
-        $events = Event::where('user_id', $user->id)->get();
+        $events = $user->events()->get();
         $data = ['events' => $events];
         return view('dashboard', $data);
     }

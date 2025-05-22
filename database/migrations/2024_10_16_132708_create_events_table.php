@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('fields')->comment("days,months,years,hours,weeks,minutes,workdays,seconds");
             $table->boolean('is_background_image');
             $table->string('background');
-            $table->foreignIdFor(User::class);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
