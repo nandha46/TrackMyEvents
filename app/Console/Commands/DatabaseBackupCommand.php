@@ -26,6 +26,14 @@ class DatabaseBackupCommand extends Command
      */
     public function handle()
     {
+
+        if(!file_exists(database_path('backups'))){
+            $this->info("Directory doesn't exists. Creating..");
+            if(!mkdir(database_path('backups'))){
+                return;
+            }
+            $this->info("Directory created.");
+        }
         $filename = "backup-tme-". Carbon::now()->format('Y-m-d-H-i-s').'.sql';
 
         $this->info("Starting database dump...");
@@ -35,7 +43,7 @@ class DatabaseBackupCommand extends Command
             config('database.connections.mysql.password'),
             config('database.connections.mysql.host'),
             config('database.connections.mysql.database'),
-            base_path('database/backups/'. $filename)
+            database_path('backups'.DIRECTORY_SEPARATOR.$filename)
             );
 
         $this->info("Command to be executed: ");

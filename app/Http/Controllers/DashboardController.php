@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function show(Request $request): View
     {
         $user = $request->user();
-        $events = $user->events()->get();
+        $events = $user->events()->paginate(12);
         $data = ['events' => $events];
         return view('dashboard', $data);
     }

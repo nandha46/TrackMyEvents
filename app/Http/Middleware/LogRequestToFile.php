@@ -17,7 +17,7 @@ class LogRequestToFile
     public function handle(Request $request, Closure $next): Response
     {
 
-        Log::channel('requestlog')->info("Log line middleware intercept");
+        Log::channel('requestlog')->info($request);
 
         return $next($request);
     }

@@ -1,0 +1,5 @@
+user_id,event_name,event_date,event_type,is_background_image,background,fields
+1,"Heera marriage","03-06-2020",Private,true,5.jpg,days
+1,"Heera son birthday","29-06-2021",Private,true,5.jpg,days
+1,"Star marriage","24-05-2023",Priavte,true,5.jpg,days
+1,"Star Son birthday","28-11-2024",Private,true,5.jpg,days

@@ -1,6 +1,6 @@
 <x-app-layout>
   <div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-dvw mx-auto sm:px-6 lg:px-8">
       <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
         @if(count($events) < 1) <h1
           class="px-2 py-2 text-center text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">
@@ -8,7 +8,7 @@
           @else
           <div class="p-6 text-gray-900 dark:text-gray-100">
             {{-- Background image card --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
               @foreach($events as $event)
               @if($event->is_background_image)
               <div class="relative aspect-w-1 aspect-h-1">
@@ -43,6 +43,7 @@
               @endif
               @endforeach
             </div>
+            {{ $events->links() }}
           </div>
           @endif
       </div>

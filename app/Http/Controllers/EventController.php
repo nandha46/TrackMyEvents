@@ -40,7 +40,7 @@ class EventController extends Controller
 
        $user = $request->user();
 
-       Log::info($validated);
+       dd($validated);
 
       $event = Event::create([
         'event_name' => 'New Day',
