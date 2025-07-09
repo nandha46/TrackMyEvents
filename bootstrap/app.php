@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\LogAnalytics;
 use App\Http\Middleware\LogRequestToFile;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,13 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
  
         $middleware->alias([
             'logger' => LogRequestToFile::class,
+            'analytics' => LogAnalytics::class,
         ]);
 
         // $middleware->append(LogRequestToFile::class);
  
-        // $middleware->web(append:[
-        //     LogRequestToFile::class
-        // ]);
+        $middleware->web(append:[
+            LogAnalytics::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         if(app()->isProduction()){

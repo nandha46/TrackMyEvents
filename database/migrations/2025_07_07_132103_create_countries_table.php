@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('avatar')->after('email_verified_at')->nullable();
+        Schema::create('countries', function (Blueprint $table) {
+            $table->id();
+            $table->string('country_name', 100)->unique();
+            $table->char('country_code', 2)->unique();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('avatar');
-        });
+        Schema::dropIfExists('countries');
     }
 };
