@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('browser_name', 100);
             $table->string('browser_version', 50);
-            $table->string('browser_major_version', 20);
             $table->unique(['browser_name', 'browser_version']);
             $table->timestamps();
         });

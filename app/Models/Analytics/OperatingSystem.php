@@ -9,6 +9,5 @@ class OperatingSystem extends Model
     protected $fillable = [
         'os_name',
         'os_version',
-        'os_major_version'
     ];
 }

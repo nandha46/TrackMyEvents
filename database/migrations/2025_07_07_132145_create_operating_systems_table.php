@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('os_name', 100);
             $table->string('os_version', 50);
-            $table->string('os_major_version', 20);
             $table->unique(['os_name', 'os_version']);
             $table->timestamps();
         });

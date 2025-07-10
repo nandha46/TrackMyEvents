@@ -15,19 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test-mail', function () {
-    $user = User::where('id', 1)->first();
-    Mail::to('nandha.kumar790@gmail.com')->send(new TestMail($user));
-    return "Mail sent";
-});
-
-Route::get('/test-notification', function () {
-    $user = User::where('id', 1)->first();
-    $event = Event::first();
-    $user->notify(new EventAdded($event));
-    return "Notification sent";
-});
-
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
@@ -44,6 +31,19 @@ Route::middleware(['auth', 'verified', 'logger'])->group(function () {
     Route::get('/events/{id}/edit', [EventController::class, 'edit'])->where('id', '[0-9]+')->name('event.edit');
     Route::put('/events/{id}', [EventController::class, 'update'])->where('id', '[0-9]+')->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'delete'])->where('id', '[0-9]+')->name('event.delete');
+
+    Route::get('/test-mail', function () {
+        $user = User::where('id', 1)->first();
+        Mail::to($user->email)->send(new TestMail($user));
+        return "Mail sent";
+    });
+
+    Route::get('/test-notification', function () {
+        $user = User::where('id', 1)->first();
+        $event = Event::first();
+        $user->notify(new EventAdded($event));
+        return "Notification sent";
+    });
 });
 
 
@@ -54,4 +54,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

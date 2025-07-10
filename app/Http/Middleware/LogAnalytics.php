@@ -6,10 +6,14 @@ use App\Models\Analytics\Browser;
 use App\Models\Analytics\Country;
 use App\Models\Analytics\IpAddress;
 use App\Models\Analytics\OperatingSystem;
+use App\Models\Analytics\Page;
+use App\Models\Analytics\PageView;
+use App\Models\Analytics\Referrer;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
+use WhichBrowser\Parser;
 
 class LogAnalytics
 {
@@ -21,13 +25,10 @@ class LogAnalytics
     public function handle(Request $request, Closure $next): Response
     {
 
-        $serverData = $request->server();
         // $ip = $request->ip();
         $ip = '183.82.30.12';
 
-        dd($request->userAgent());
-
-        $response = Http::get('http://ip-api.com/json/'.$ip.'?fields=status,message,country,countryCode,regionName,city,isp');
+        $response = Http::get('http://ip-api.com/json/' . $ip . '?fields=status,message,country,countryCode,regionName,city,isp');
 
         $region = 'Local';
         $city = 'Local';
@@ -35,7 +36,7 @@ class LogAnalytics
         $countryCode = 'LO';
         $country = 'LOCAL';
 
-        if($response->ok()){
+        if ($response->ok()) {
             $data = $response->json();
 
             $region = $data['regionName'];
@@ -45,12 +46,12 @@ class LogAnalytics
             $country = $data['country'];
         }
 
-        $country = Country::firstOrNew([
-            ['country_name' => $countryCode],
+        $country = Country::firstOrCreate(
+            ['country_code' => $countryCode],
             ['country_name' => $country]
-        ]);
+        );
 
-        $ipaddress = IpAddress::firstOrNew([
+        $ipaddress = IpAddress::firstOrCreate(
             ['ip_address' => $ip],
             [
                 'ip_address_hash' => hash('md5', $ip),
@@ -59,21 +60,45 @@ class LogAnalytics
                 'isp' => $isp,
                 'country_id' => $country->id,
             ]
+        );
+
+        $parsedUA = new Parser($request->userAgent());
+
+        $browser = Browser::firstOrCreate(
+            [
+                'browser_name' => $parsedUA->browser->name,
+                'browser_version' => $parsedUA->browser->version->value
+            ]
+        );
+
+        $os = OperatingSystem::firstOrCreate(
+            [
+                'os_name' => $parsedUA->os->name,
+                'os_version' => $parsedUA->os->version->alias
+            ]
+        );
+
+        //TO-DO parse referer url to identify referer type & domain
+        $referrer = Referrer::firstOrCreate([
+            'referrer_url' => $request->header('referer', "Direct"),
+        ], [
+            'referrer_domain' => $request->header('referer', "Direct"),
+            'referrer_type' => 'TBD',
         ]);
 
-        // $browser = Browser::firstOrNew([
-        // ['browser_name' => 1,
-        // 'browser_version' => 1],
-        // ['browser_major_version'],
-        // ]);
+        $page = Page::firstOrCreate([
+            'url_path' => $request->url()
+        ]);
 
-        // $os = OperatingSystem::firstOrNew([
-        // ['os_name',
-        // 'os_version'],
-        // ['os_major_version']
-        // ]);
-
-        dd($serverData);
+        PageView::create([
+            'device_type' => $parsedUA->device->type,
+            'user_id' => null,
+            'page_id' => $page->id,
+            'referrer_id' => $referrer->id,
+            'ip_address_id' => $ipaddress->id,
+            'browser_id' => $browser->id,
+            'os_id' => $os->id,
+        ]);
 
         return $next($request);
     }

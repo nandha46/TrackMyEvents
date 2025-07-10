@@ -9,6 +9,5 @@ class Browser extends Model
     protected $fillable = [
         'browser_name',
         'browser_version',
-        'browser_major_version',
     ];
 }

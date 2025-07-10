@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('page_views', function (Blueprint $table) {
             $table->id();
-            $table->string('session_id', 255);
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('page_id');
             $table->unsignedBigInteger('referrer_id');
             $table->unsignedBigInteger('ip_address_id');
             $table->unsignedBigInteger('browser_id');
             $table->unsignedBigInteger('os_id');
             $table->string('device_type');
-            $table->foreign('session_id')->references('id')->on('sessions')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('page_id')->references('id')->on('pages')->cascadeOnDelete();
             $table->foreign('referrer_id')->references('id')->on('referrers')->cascadeOnDelete();
