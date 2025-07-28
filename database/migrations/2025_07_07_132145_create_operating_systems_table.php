@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('operating_systems', function (Blueprint $table) {
             $table->id();
-            $table->string('os_name', 100);
-            $table->string('os_version', 50);
+            $table->string('os_name', 100)->default('unknown');
+            $table->string('os_version', 50)->nullable();
             $table->unique(['os_name', 'os_version']);
             $table->timestamps();
         });

@@ -47,7 +47,7 @@ class Event extends Model
 
     protected function eventDate (): Attribute {
         return Attribute::make(
-            get: fn(string $value) => Carbon::parse($value)->format('d-M-Y'),
+            get: fn(string $value) => Carbon::parse($value)->format('Y-m-d'),
         );
     }
 

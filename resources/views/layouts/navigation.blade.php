@@ -32,15 +32,14 @@
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex flex-shrink-0 items-center">
-          <img class="h-8 w-auto" src="{{ url("/logo_tme.png") }}"
-            alt="Your Company">
+          <img class="h-8 w-auto" src="{{ url("/logo_tme.png") }}" alt="Your Company">
         </div>
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
             <a href="{{ route('dashboard') }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
               aria-current="page">Personal</a>
-            <a href="#"
+            <a href="{{ route('profile.edit') }}" wire:navigate
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Work</a>
             {{-- <a href="#"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reminder</a>
@@ -59,7 +58,7 @@
         </div>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <div class="mr-8">
+        <div class="mr-8 hidden md:block">
           <label class="relative block">
             <span class="sr-only">Search</span>
             <span class="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -70,10 +69,9 @@
               placeholder="Search for anything..." type="text" name="search" />
           </label>
         </div>
-        <a href="{{ route('event.create') }}" class="mr-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded flex items-center inline-block">
-  <x-Icons.plus />
-  New Event
-</a>
+        <x-new-event-button href="{{ route('event.create') }}" class="hidden sm:block">
+          New Event
+        </x-new-event-button>
         <button type="button"
           class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
           <span class="absolute -inset-1.5"></span>
@@ -101,11 +99,17 @@
             x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="transform opacity-100 scale-100"
             x-transition:leave-end="transform opacity-0 scale-95">
-            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+            <a href="{{ route('profile.edit') }}"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white" role="menuitem"
               tabindex="-1" id="user-menu-item-0">Your Profile</a>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
-              id="user-menu-item-1">Settings</a>
-            <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white"
+              role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
+            <form action="{{ route('logout') }}" method="POST" class="hover:bg-indigo-500">
+              @csrf
+              <button class="block px-4 py-2 text-sm text-gray-700 hover:text-white text-left w-full" type="submit">Sign
+                out</button>
+              {{-- <a href="#" class="block px-4 py-2 text-sm text-gray-700">Sign out</a> --}}
+            </form>
           </div>
         </div>
       </div>

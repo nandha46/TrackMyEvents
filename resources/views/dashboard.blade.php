@@ -1,10 +1,16 @@
 <x-app-layout>
   <div class="py-12">
     <div class="max-w-dvw mx-auto sm:px-6 lg:px-8">
-      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-        @if(count($events) < 1) <h1
-          class="px-2 py-2 text-center text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">
-          No Events</h1>
+      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg text-center">
+        @if(count($events) < 1) 
+        <x-Icons.new-notes />
+        <h3 class="font-semibold">No Events</h3>
+        <p class="font-thin text-gray-600 my-2">Get started by creating a new event.</p>
+        <div class="mt-3">
+        <x-new-event-button href="{{ route('event.create') }}" >
+          Add New Event
+        </x-new-event-button>
+        </div>
           @else
           <div class="p-6 text-gray-900 dark:text-gray-100">
             {{-- Background image card --}}
