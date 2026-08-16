@@ -62,19 +62,19 @@ class LogAnalytics
             ]
         );
 
-        $parsedUA = new Parser($request->userAgent());
+        $parsedUA = new Parser($request->userAgent() ?? '');
 
         $browser = Browser::firstOrCreate(
             [
-                'browser_name' => $parsedUA->browser->name,
-                'browser_version' => $parsedUA->browser->version->value
+                'browser_name' => $parsedUA->browser->name ?? 'Unknown',
+                'browser_version' => $parsedUA->browser->version?->value ?? 'Unknown'
             ]
         );
 
         $os = OperatingSystem::firstOrCreate(
             [
-                'os_name' => $parsedUA->os->name,
-                'os_version' => $parsedUA->os->version->alias
+                'os_name' => $parsedUA->os->name ?? 'Unknown',
+                'os_version' => $parsedUA->os->version?->alias ?? ($parsedUA->os->version?->value ?? 'Unknown')
             ]
         );
 

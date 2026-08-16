@@ -34,18 +34,28 @@ class EventAdded extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'slack'];
+        $channels = ['database'];
+        if (config('services.slack.notifications.bot_user_oauth_token')) {
+            $channels[] = 'slack';
+        }
+        return $channels;
     }
 
+    /**
+     * Get the mail representation of the notification.
+     */
     /**
      * Get the mail representation of the notification.
      */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('New Event Added: ' . $this->event->event_name)
+            ->greeting('Hello ' . $notifiable->name . '!')
+            ->line('A new event "' . $this->event->event_name . '" was successfully scheduled for ' . $this->event->event_date . '.')
+            ->line('Category: ' . $this->event->event_type)
+            ->action('View Event', route('event.show', $this->event->id))
+            ->line('Thank you for using TrackMyEvents!');
     }
 
     /**
@@ -56,8 +66,11 @@ class EventAdded extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'event_id' => $this->event->id,
             'name' => $this->event->event_name,
+            'date' => $this->event->event_date,
             'type' => $this->event->event_type,
+            'message' => 'Event "' . $this->event->event_name . '" was added for ' . $this->event->event_date,
         ];
     }
 
@@ -67,19 +80,13 @@ class EventAdded extends Notification
     public function toSlack(object $notifiable): SlackMessage
     {
         return (new SlackMessage)
-            ->text('One of your invoices has been paid!')
-            ->headerBlock('Invoice Paid')
-            ->contextBlock(function (ContextBlock $block) {
-                $block->text('Customer #1234');
-            })
+            ->text('New event created: ' . $this->event->event_name)
+            ->headerBlock('New Event Added')
             ->sectionBlock(function (SectionBlock $block) {
-                $block->text('An invoice has been paid.');
-                $block->field("*Invoice No:*\n1000")->markdown();
-                $block->field("*Invoice Recipient:*\ntaylor@laravel.com")->markdown();
+                $block->text('*' . $this->event->event_name . '* has been created.');
+                $block->field("*Event Date:*\n" . $this->event->event_date)->markdown();
+                $block->field("*Event Type:*\n" . $this->event->event_type)->markdown();
             })
-            ->dividerBlock()
-            ->sectionBlock(function (SectionBlock $block) {
-                $block->text('Congratulations!');
-            });
+            ->dividerBlock();
     }
 }

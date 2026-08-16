@@ -18,8 +18,7 @@ class UploadCSV extends Component
 
     use WithFileUploads;
 
-    // #[Validate('required|file|mimes:csv,txt')]
-    #[Validate('required|file')]
+    #[Validate('required|file|mimes:csv,txt|max:5120')]
     public $csvfile;
 
     public $message = '';
@@ -27,68 +26,89 @@ class UploadCSV extends Component
 
     public function save()
     {
-        // try{
-            // $this->validate();
-            $path = $this->csvfile->store('csv_uploads', 'public');
+        $this->validate();
 
-            $file = new SplFileObject(storage_path('app/public/'.$path), 'r');
-            $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::READ_AHEAD);
-
-            $header = $file->current();
-
-            $file->next();
-
-        $importedCount = 0;
-        $skippedCount = 0;
-
-        $rows = [];
-
-        $startTime = time();
-
-        while (!$file->eof()) {
-            $row = $file->current();
-            if (empty($row) || count($row) !== count($header)) {
-                $file->next(); 
-                $skippedCount++;
-                continue;
-            }
-            Log::info($row[1]);
-
-            $row[1] = Carbon::parse($row[1])->format('Y-m-d');
-
-            Log::info($row[1]);
-
-            $data = array_combine($header, $row);
-
-            try {
-                $data['is_background_image'] = filter_var($data['is_background_image'], FILTER_VALIDATE_BOOLEAN);
-                $rows[] = $data;
-                $importedCount++;
-            } catch (\Exception $e) {
-                Log::warning("EventSeeder: Skipping row due to error: " . $e->getMessage() . " Data: " . json_encode($data));
-                $skippedCount++;
-            }
-
-            $file->next();
+        $user = Auth::user();
+        if (!$user) {
+            $this->errorMessage = 'You must be logged in to import events.';
+            return;
         }
 
-        $endTime = time() - $startTime;
+        try {
+            $path = $this->csvfile->store('csv_uploads', 'local');
+            $fullPath = storage_path('app/' . $path);
 
-        Log::info("Time taken: ". $endTime."ms");
+            if (!file_exists($fullPath)) {
+                $this->errorMessage = 'Uploaded file could not be found.';
+                return;
+            }
 
-            Event::where('user_id', Auth::user()?->id)->insert($rows);
+            $file = new SplFileObject($fullPath, 'r');
+            $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
 
-            $this->message = "CSV file processed and ".$importedCount." events added and ".$skippedCount." events skipped due to error.";
+            $rawHeader = $file->fgetcsv();
+            if (!$rawHeader) {
+                $this->errorMessage = 'The CSV file is empty.';
+                return;
+            }
+
+            $header = array_map(fn($col) => trim(strval($col)), $rawHeader);
+
+            $importedCount = 0;
+            $skippedCount = 0;
+            $rows = [];
+
+            while (!$file->eof()) {
+                $row = $file->fgetcsv();
+                if (!$row || count($row) !== count($header)) {
+                    if ($row && !empty(array_filter($row))) {
+                        $skippedCount++;
+                    }
+                    continue;
+                }
+
+                $data = array_combine($header, $row);
+
+                if (empty($data['event_name']) || empty($data['event_date'])) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                try {
+                    $eventDate = Carbon::parse($data['event_date'])->format('Y-m-d');
+                    $isBg = filter_var($data['is_background_image'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+                    $rows[] = [
+                        'event_name' => substr(trim($data['event_name']), 0, 100),
+                        'event_date' => $eventDate,
+                        'event_time' => !empty($data['event_time']) ? Carbon::parse($data['event_time'])->format('H:i:s') : null,
+                        'event_type' => !empty($data['event_type']) ? trim($data['event_type']) : 'Personal',
+                        'fields' => !empty($data['fields']) ? trim($data['fields']) : 'days,months,years',
+                        'is_background_image' => $isBg,
+                        'background' => !empty($data['background']) ? trim($data['background']) : 'from-purple-500 to-indigo-600',
+                        'user_id' => $user->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                    $importedCount++;
+                } catch (\Exception $e) {
+                    Log::warning("UploadCSV row parse error: " . $e->getMessage());
+                    $skippedCount++;
+                }
+            }
+
+            if (!empty($rows)) {
+                Event::insert($rows);
+            }
+
+            $this->message = "CSV file processed: {$importedCount} events imported, {$skippedCount} skipped.";
             $this->csvfile = null;
-
             session()->flash('status', 'Events imported.');
-
-        // } catch(ValidationException $e){
-        //     $this->errorMessage = 'Validation Failed: '.$e->getMessage();
-        // }
-        // catch(Exception $e){
-        //     $this->errorMessage = 'An error occurred during upload or processing: '. $e->getMessage();
-        // }
+        } catch (ValidationException $e) {
+            $this->errorMessage = 'Validation failed: ' . $e->getMessage();
+        } catch (Exception $e) {
+            $this->errorMessage = 'An error occurred during CSV processing: ' . $e->getMessage();
+        }
     }
 
     public function render()

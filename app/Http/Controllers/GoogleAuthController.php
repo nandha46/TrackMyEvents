@@ -24,31 +24,41 @@ class GoogleAuthController extends Controller
     /**
      * Handle the callback from Google.
      */
-    public function callback (): RedirectResponse
+    public function callback(): RedirectResponse
     {
-        try{
-            $user = Socialite::driver('google')->user();
-        } catch(Throwable $e){
-            dd($e);
-            return redirect('/')->with('error', 'Google authentication failed.');
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Google OAuth error: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Google authentication failed. Please try again.');
         }
 
-        $existingUser = User::where('email', $user->getEmail())->first();
+        $existingUser = User::where('email', $googleUser->getEmail())->first();
 
-        if($existingUser){
-            Auth::login($user);
+        if ($existingUser) {
+            Auth::login($existingUser);
         } else {
+            $avatarName = 'default.jpg';
+
+            if ($googleUser->getAvatar()) {
+                try {
+                    $avatarContents = @file_get_contents($googleUser->getAvatar());
+                    if ($avatarContents) {
+                        $avatarName = 'google_' . uniqid() . '.jpg';
+                        file_put_contents(public_path('uploads/profile_pictures/' . $avatarName), $avatarContents);
+                    }
+                } catch (Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Google avatar download failed: ' . $e->getMessage());
+                }
+            }
+
             $newUser = User::create([
-                'name' => $user->getName(),
-                'email' => $user->getEmail(),
-                'password' => Hash::make(Str::random(16)),
+                'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Google User',
+                'email' => $googleUser->getEmail(),
+                'password' => Hash::make(Str::random(24)),
                 'email_verified_at' => now(),
+                'avatar' => $avatarName,
             ]);
-
-            $file_resource = fopen($user->getAvatar(), 'r');
-
-
-            Storage::disk('local')->putFile('google avatars', $file_resource);
 
             Auth::login($newUser);
         }

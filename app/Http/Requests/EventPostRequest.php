@@ -22,17 +22,25 @@ class EventPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'event_name' => ['required', 'string', 'min:3', 'max:25'],
+            'event_name' => ['required', 'string', 'min:3', 'max:100'],
             'event_date' => ['required', 'date'],
-            'event_type' => ['string'],
+            'event_time' => ['nullable', 'date_format:H:i'],
+            'event_type' => ['required', 'string', 'in:Personal,Private,Work,Reminder,Past,Future'],
+            'fields' => ['nullable', 'array'],
+            'fields.*' => ['string', 'in:days,months,years,hours,weeks,minutes,seconds,workdays'],
+            'is_background_image' => ['nullable', 'boolean'],
+            'background_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
+            'background_gradient' => ['nullable', 'string', 'max:100'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'event_name.min' => 'A Event Name should be atleast 3 characters.',
-            'event_name.max' => 'A Event Name should be less than 25 characters.',
+            'event_name.required' => 'An event name is required.',
+            'event_name.min' => 'An event name should be at least 3 characters.',
+            'event_name.max' => 'An event name must be less than 100 characters.',
+            'event_date.required' => 'An event date is required.',
         ];       
     }
 }

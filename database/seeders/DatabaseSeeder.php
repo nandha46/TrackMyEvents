@@ -14,12 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::insert([
-            'name' => 'Test Example',
-            'email' => 'test@example.com',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
             'password' => Hash::make('password'),
+            'avatar' => 'default.jpg',
         ]);
 
-        User::factory(99)->create();
+        User::factory(7)->create();
         
         $this->call(EventSeeder::class);
 
