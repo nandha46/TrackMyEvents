@@ -14,11 +14,9 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('url_path', 2048);
+            $table->string('url_path', 2048)->unique('url_path_unique');
             $table->timestamps();
         });
-
-        DB::statement('ALTER TABLE pages ADD UNIQUE INDEX url_path_unique (url_path(191))');
     }
 
     /**

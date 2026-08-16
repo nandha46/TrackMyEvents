@@ -14,13 +14,11 @@ return new class extends Migration
     {
         Schema::create('referrers', function (Blueprint $table) {
             $table->id();
-            $table->text('referrer_url', 2048);
+            $table->text('referrer_url', 2048)->unique('referrer_url_partial_unique');
             $table->text('referrer_domain', 255);
             $table->string('referrer_type', 50);
             $table->timestamps();
         });
-
-        DB::statement('ALTER TABLE referrers ADD UNIQUE INDEX referrer_url_partial_unique (referrer_url(191))');
     }
 
     /**
