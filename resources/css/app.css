@@ -3,70 +3,107 @@
 @tailwind utilities;
 
 [x-cloak] {
-    display: none;
+    display: none !important;
 }
 
-.timecard {
-    height: 20rem;
-    width: auto;
+/* Skeleton Loading Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
 }
 
-.gradient {
-
-    background: linear-gradient(to top, red, blue),
-    linear-gradient(to right, #5affb2, #61efff);
-    background-blend-mode: overlay;
+.skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.15) 37%, rgba(255, 255, 255, 0.05) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
 }
 
-.gradient2 {
-
-    background: linear-gradient(to top, red, blue),
-    linear-gradient(to right, #f6cdbc, #baddf2);
-    background-blend-mode: overlay;
+.dark .skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.03) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
 }
 
+/* Glassmorphism & Modern Accents */
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glassmorphism {
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Gradients */
 .custom-font-style {
-    margin-left: 1rem;
-    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
 }
 
-.text-wrapper {
-    margin-top: 9rem;
+/* Smooth Transitions */
+* {
+    transition-property: background-color, border-color;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.custom-btn {
-    border-radius: 0.5rem;
-    font-weight: 600;
-    line-height: 1.25rem;
-    padding: 0.3rem 1rem 0.3rem 1rem;
-    background: #6366f1;
-    color: white;
+/* Modern Flatpickr Calendar Styling */
+.flatpickr-calendar {
+    background: #ffffff;
+    border-radius: 1.25rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(229, 231, 235, 1) !important;
+    font-family: inherit !important;
+    padding: 0.75rem !important;
 }
 
-.text-shadow {
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+.dark .flatpickr-calendar {
+    background: #111827 !important;
+    border: 1px solid rgba(55, 65, 81, 1) !important;
+    color: #f3f4f6 !important;
 }
 
-.text-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Center the text */
-    color: white; /* Text color */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    padding: 20px;
-    text-align: center;
-    width: 80%; /* adjust as needed */
-  }
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+    background: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+    border-radius: 0.75rem !important;
+}
 
-  .image-container {
-    position: relative; /* Important for absolute positioning of the text */
-    display: inline-block; /* Or block, depending on your layout */
-  }
-  
-  .image-container img {
-    display: block; /* Removes extra space below the image */
-    width: auto; /* Make the image responsive */
-    height: 20rem; /* Maintain aspect ratio */
-  }
-/*  */
+.flatpickr-day:hover {
+    background: #e0e7ff !important;
+    border-radius: 0.75rem !important;
+}
+
+.dark .flatpickr-day:hover {
+    background: #312e81 !important;
+}
+
+.dark .flatpickr-day {
+    color: #e5e7eb !important;
+}
+
+.dark .flatpickr-day.flatpickr-disabled, .dark .flatpickr-day.flatpickr-disabled:hover {
+    color: #4b5563 !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    color: #111827 !important;
+    fill: #111827 !important;
+}
+
+.dark .flatpickr-months .flatpickr-month {
+    color: #f9fafb !important;
+    fill: #f9fafb !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-weight: 800 !important;
+}

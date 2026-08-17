@@ -24,9 +24,13 @@ class LogAnalytics
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (app()->runningUnitTests() || app()->environment('testing')) {
+            return $next($request);
+        }
 
-        // $ip = $request->ip();
-        $ip = '183.82.30.12';
+        try {
+            $ip = $request->ip() ?: '127.0.0.1';
+
 
         $response = Http::get('http://ip-api.com/json/' . $ip . '?fields=status,message,country,countryCode,regionName,city,isp');
 
@@ -99,6 +103,9 @@ class LogAnalytics
             'browser_id' => $browser->id,
             'os_id' => $os->id,
         ]);
+        } catch (\Throwable $e) {
+            // Log analytics error gracefully
+        }
 
         return $next($request);
     }

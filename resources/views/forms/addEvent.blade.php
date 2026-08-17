@@ -1,105 +1,175 @@
 <x-app-layout>
-  <div class="sm:max-w-3xl max-w-full mx-auto p-6 bg-white rounded-md shadow-md">
-    <div>
-      <h2 class="text-2xl font-semibold mb-6 border-b pb-6">Add New Event</h2>
-    </div>
-    <form method="POST" class="max-w-2xl mx-auto" action="{{ route('event.store') }}" enctype="multipart/form-data" x-data="{ useImage: false }">
-      @csrf
-      <div class="mb-5">
-        <label for="eventName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Event Name</label>
-        <input type="text" id="eventName" name="event_name"
-          class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Enter event name" value="{{ old('event_name') }}" required />
-        <x-input-error class="mt-2" :messages="$errors->get('event_name')" />
-      </div>
-      <div class="flex justify-evenly gap-4">
-        <div class="mb-4 w-full">
-          <label for="eventDate" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Date</label>
-          <input type="date" id="eventDate" name="event_date" value="{{ old('event_date') }}" required
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-white">
-          <x-input-error class="mt-2" :messages="$errors->get('event_date')" />
-        </div>
-        <div class="mb-4 w-full">
-          <label for="eventTime" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Time (optional)</label>
-          <input type="time" id="eventTime" name="event_time" value="{{ old('event_time') }}"
-            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-white">
-          <x-input-error class="mt-2" :messages="$errors->get('event_time')" />
-        </div>
-      </div>
-      <div class="mb-6">
-        <label for="eventType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Event Type</label>
-        <select id="eventType" name="event_type"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-          <option value="Personal" {{ old('event_type') === 'Personal' ? 'selected' : '' }}>Personal</option>
-          <option value="Private" {{ old('event_type') === 'Private' ? 'selected' : '' }}>Private</option>
-          <option value="Work" {{ old('event_type') === 'Work' ? 'selected' : '' }}>Work</option>
-          <option value="Reminder" {{ old('event_type') === 'Reminder' ? 'selected' : '' }}>Reminder</option>
-          <option value="Past" {{ old('event_type') === 'Past' ? 'selected' : '' }}>Past</option>
-          <option value="Future" {{ old('event_type') === 'Future' ? 'selected' : '' }}>Future</option>
-        </select>
-        <x-input-error class="mt-2" :messages="$errors->get('event_type')" />
-      </div>
-      <div class="mb-5">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Time Display Units</label>
-        <fieldset class="flex flex-wrap gap-4">
-          <legend class="sr-only">Time display fields selection</legend>
-          @foreach(['days', 'months', 'years', 'hours', 'weeks', 'minutes', 'seconds', 'workdays'] as $field)
-          <div class="flex items-center">
-            <input id="field-{{ $field }}" type="checkbox" value="{{ $field }}" name="fields[]"
-              {{ in_array($field, old('fields', ['days', 'months', 'years'])) ? 'checked' : '' }}
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600">
-            <label for="field-{{ $field }}" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ ucfirst($field) }}</label>
-          </div>
-          @endforeach
-        </fieldset>
-        <x-input-error class="mt-2" :messages="$errors->get('fields')" />
-      </div>
-      <div class="mb-5">
-        <label class="inline-flex items-center cursor-pointer">
-          <input type="checkbox" value="1" name="is_background_image" x-model="useImage" class="sr-only peer">
-          <div
-            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-          </div>
-          <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Use Background Image</span>
-        </label>
-      </div>
+    <div class="py-6 sm:py-10">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="mb-5" x-show="useImage" x-cloak>
-        <div class="flex items-center justify-center w-full">
-          <label for="dropzone-file"
-            class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600">
-            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-              <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-              </svg>
-              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload image</span></p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, JPEG, WEBP (MAX. 2MB)</p>
+            <div class="mb-6 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">Create New Event</h2>
+                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Add a countdown or milestone to track in your dashboard</p>
+                </div>
+                <a href="{{ route('dashboard') }}" class="text-xs font-bold text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400">&larr; Cancel</a>
             </div>
-            <input id="dropzone-file" type="file" name="background_image" accept="image/*" class="hidden" />
-          </label>
+
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700">
+                <form action="{{ route('event.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+                      x-data="{
+                          selectedTheme: 'gradient',
+                          selectedGradient: 'gradient-1',
+                          recurrence: 'none'
+                      }">
+                    @csrf
+
+                    <!-- Event Name -->
+                    <div>
+                        <label for="event_name" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Event Name</label>
+                        <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}" required
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+                               placeholder="e.g., Summer Vacation to Hawaii or Mom's Birthday">
+                        @error('event_name') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Modern Date & Time Picker -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="event_date" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Event Date</label>
+                            <div class="relative">
+                                <input type="text" name="event_date" id="event_date" x-datepicker value="{{ old('event_date', date('Y-m-d')) }}" required
+                                       class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                <svg class="w-4 h-4 text-gray-400 absolute right-4 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            @error('event_date') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label for="event_time" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Event Time (Optional)</label>
+                            <div class="relative">
+                                <input type="text" name="event_time" id="event_time" x-timepicker value="{{ old('event_time', '10:00') }}"
+                                       class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                <svg class="w-4 h-4 text-gray-400 absolute right-4 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            @error('event_time') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Category (with Birthday) & Recurrence -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="event_type" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+                            <select name="event_type" id="event_type" class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="Personal" {{ old('event_type') === 'Personal' ? 'selected' : '' }}>Personal</option>
+                                <option value="Birthday" {{ old('event_type') === 'Birthday' ? 'selected' : '' }}>🎂 Birthday</option>
+                                <option value="Work" {{ old('event_type') === 'Work' ? 'selected' : '' }}>Work</option>
+                                <option value="Reminder" {{ old('event_type') === 'Reminder' ? 'selected' : '' }}>Reminder</option>
+                                <option value="Private" {{ old('event_type') === 'Private' ? 'selected' : '' }}>Private</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="recurrence_type" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Recurrence Schedule</label>
+                            <select name="recurrence_type" id="recurrence_type" x-model="recurrence" class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="none">One-time Event (No Recurrence)</option>
+                                <option value="yearly">Repeats Yearly (Birthday / Anniversary)</option>
+                                <option value="monthly">Repeats Monthly</option>
+                                <option value="weekly">Repeats Weekly</option>
+                                <option value="daily">Repeats Daily</option>
+                            </select>
+                            <input type="hidden" name="is_recurring" :value="recurrence !== 'none' ? '1' : '0'">
+                        </div>
+                    </div>
+
+                    <!-- Visual Theme Toggle (Gradient vs Custom Photo) -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-2">Visual Theme</label>
+                        
+                        <!-- Segmented control switch -->
+                        <div class="inline-flex p-1 bg-gray-100 dark:bg-gray-900 rounded-2xl mb-4 w-full sm:w-auto">
+                            <button type="button" @click="selectedTheme = 'gradient'"
+                                    :class="selectedTheme === 'gradient' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold' : 'text-gray-500 dark:text-gray-400 font-medium'"
+                                    class="flex-1 sm:flex-initial px-4 py-2 text-xs rounded-xl transition">
+                                Gradient Colors
+                            </button>
+                            <button type="button" @click="selectedTheme = 'image'"
+                                    :class="selectedTheme === 'image' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold' : 'text-gray-500 dark:text-gray-400 font-medium'"
+                                    class="flex-1 sm:flex-initial px-4 py-2 text-xs rounded-xl transition">
+                                Custom Photo Background
+                            </button>
+                        </div>
+
+                        <input type="hidden" name="is_background_image" :value="selectedTheme === 'image' ? '1' : '0'">
+
+                        <!-- Gradient Palettes -->
+                        <div x-show="selectedTheme === 'gradient'" class="grid grid-cols-4 gap-2.5">
+                            @foreach([
+                                'gradient-1' => 'from-purple-500 to-indigo-600',
+                                'gradient-2' => 'from-blue-500 to-teal-500',
+                                'gradient-3' => 'from-pink-500 to-rose-500',
+                                'gradient-4' => 'from-amber-500 to-orange-600',
+                                'gradient-5' => 'from-emerald-500 to-green-600',
+                                'gradient-6' => 'from-cyan-500 to-blue-600',
+                                'gradient-7' => 'from-violet-600 to-fuchsia-600',
+                                'gradient-8' => 'from-rose-500 to-purple-600',
+                            ] as $key => $grad)
+                                <label @click="selectedGradient = '{{ $key }}'"
+                                       :class="selectedGradient === '{{ $key }}' ? 'ring-4 ring-indigo-500 scale-105' : 'opacity-85 hover:opacity-100'"
+                                       class="relative cursor-pointer rounded-2xl h-14 bg-gradient-to-r {{ $grad }} flex items-center justify-center transition-all shadow-xs">
+                                    <input type="radio" name="background_gradient" value="{{ $key }}" x-model="selectedGradient" class="sr-only">
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <!-- Drag and drop image dropzone -->
+                        <div x-show="selectedTheme === 'image'" x-data="dropzone()" x-cloak class="mt-2">
+                            <div @dragover.prevent="isDragging = true"
+                                 @dragleave.prevent="isDragging = false"
+                                 @drop.prevent="handleDrop($event)"
+                                 :class="isDragging ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20' : 'border-gray-300 dark:border-gray-600'"
+                                 class="border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center cursor-pointer hover:border-indigo-500 transition">
+                                
+                                <template x-if="!previewUrl">
+                                    <div>
+                                        <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold">Drag & drop your background photo here, or <span class="text-indigo-600 dark:text-indigo-400 underline">browse</span></p>
+                                        <p class="text-[10px] text-gray-400 mt-1">Supports JPG, PNG, WEBP up to 4MB</p>
+                                    </div>
+                                </template>
+
+                                <template x-if="previewUrl">
+                                    <div class="relative max-w-xs mx-auto">
+                                        <img :src="previewUrl" class="h-36 w-full object-cover rounded-2xl shadow-md">
+                                        <button type="button" @click="clearPreview()" class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full p-1.5 shadow-md hover:bg-rose-500">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <input type="file" name="background_image" x-ref="fileInput" @change="handleFileSelect($event)" accept="image/*" class="sr-only">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestones Checklist input -->
+                    <div>
+                        <label for="milestones" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Sub-tasks / Milestones Checklist (Optional)</label>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-1.5">Enter each checklist task on a new line</p>
+                        <textarea name="milestones" id="milestones" rows="3"
+                                  class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+                                  placeholder="Book flight tickets&#10;Reserve hotel&#10;Order cake"></textarea>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Notes & Description (Optional)</label>
+                        <textarea name="description" id="description" rows="2"
+                                  class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+                                  placeholder="Add any extra notes or memories..."></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/25 transition text-sm">
+                        Create Event & Start Tracking
+                    </button>
+                </form>
+            </div>
+
         </div>
-        <x-input-error class="mt-2" :messages="$errors->get('background_image')" />
-      </div>
-
-      <div id="gradientSelectorSection" class="mb-5" x-show="!useImage">
-        <label for="background_gradient" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Background Gradient</label>
-        <select id="background_gradient" name="background_gradient"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="from-purple-500 to-indigo-600">Purple to Indigo</option>
-          <option value="from-blue-500 to-teal-500">Blue to Teal</option>
-          <option value="from-pink-500 to-rose-500">Pink to Rose</option>
-          <option value="from-amber-500 to-orange-600">Amber to Orange</option>
-          <option value="from-emerald-500 to-green-600">Emerald to Green</option>
-        </select>
-        <x-input-error class="mt-2" :messages="$errors->get('background_gradient')" />
-      </div>
-
-      <div class="flex justify-end gap-2">
-        <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md">Cancel</a>
-        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">Create Event</button>
-      </div>
-    </form>
-  </div>
+    </div>
 </x-app-layout>

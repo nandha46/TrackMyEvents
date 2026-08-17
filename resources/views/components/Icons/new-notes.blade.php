@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 19.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px"
-    y="0px" viewBox="0 0 80 80" style="enable-background:new 0 0 80 80;" xml:space="preserve" width="80" height="80" class="w-12 inline-flex">
+    y="0px" viewBox="0 0 80 80" style="enable-background:new 0 0 80 80;" xml:space="preserve" {{ $attributes->merge(['class' => 'w-12 inline-flex']) }}>
     <g>
         <rect x="2.5" y="14.5" style="fill:#F2FAFF;" width="63" height="63" />
         <g>
@@ -36,7 +34,6 @@
         </g>
     </g>
     <g>
-
         <rect x="62.798" y="6.602" transform="matrix(0.7071 -0.7071 0.7071 0.7071 10.4122 51.1758)"
             style="fill:#D9E7F5;" width="8.366" height="12.834" />
         <g>

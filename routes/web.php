@@ -1,58 +1,56 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ProfileController;
-use App\Mail\TestMail;
-use App\Models\Event;
-use App\Models\User;
-use App\Notifications\EventAdded;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware('guest')->group(function () {
-    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
-    Route::get('/api/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('api.google.auth.callback');
-});
+// Static Public Pages
+Route::view('/privacy-policy', 'pages.privacy')->name('privacy');
+Route::view('/terms-of-service', 'pages.terms')->name('terms');
+Route::view('/about', 'pages.about')->name('about');
 
-Route::middleware(['auth', 'verified', 'logger'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+// Public Shareable Event View (no auth required)
+Route::get('/share/{token}', [EventController::class, 'publicShare'])->name('event.public_share');
 
-    Route::get('/events', [EventController::class, 'index'])->name('event.index');
-    Route::get('/events/create', [EventController::class, 'create'])->name('event.create');
-    Route::get('/events/{id}', [EventController::class, 'show'])->where('id', '[0-9]+')->name('event.show');
-    Route::post('/events', [EventController::class, 'store'])->name('event.store');
-    Route::get('/events/{id}/edit', [EventController::class, 'edit'])->where('id', '[0-9]+')->name('event.edit');
-    Route::put('/events/{id}', [EventController::class, 'update'])->where('id', '[0-9]+')->name('event.update');
-    Route::delete('/events/{id}', [EventController::class, 'delete'])->where('id', '[0-9]+')->name('event.delete');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [EventController::class, 'index'])->name('dashboard');
 
-    Route::get('/test-mail', function () {
-        $user = User::where('id', 1)->first();
-        Mail::to($user->email)->send(new TestMail($user));
-        return "Mail sent";
-    });
-
-    Route::get('/test-notification', function () {
-        $user = User::where('id', 1)->first();
-        $event = Event::first();
-        $user->notify(new EventAdded($event));
-        return "Notification sent";
-    });
-});
-
-
-Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('/profile-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
-    Route::get('/profile/export', [ProfileController::class, 'exportEvents'])->name('profile.export');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update_avatar');
+
+    // Data portability: export, import, templates
+    Route::get('/profile/export', [ProfileController::class, 'exportEvents'])->name('profile.export');
+    Route::post('/profile/import', [ProfileController::class, 'importEvents'])->name('profile.import');
+    Route::get('/profile/template/{format}', [ProfileController::class, 'downloadTemplate'])->name('profile.template');
+
+    // Events management
+    Route::get('/events/create', [EventController::class, 'create'])->name('event.create');
+    Route::post('/events', [EventController::class, 'store'])->name('event.store');
+    Route::get('/events/{id}', [EventController::class, 'show'])->name('event.show');
+    Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('event.edit');
+    Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
+    Route::delete('/events/{id}', [EventController::class, 'delete'])->name('event.delete');
+    Route::get('/events/{id}/ical', [EventController::class, 'exportIcal'])->name('event.ical');
+    Route::post('/events/{id}/milestones/toggle', [EventController::class, 'toggleMilestone'])->name('event.milestone_toggle');
+
+    // Bulk actions
+    Route::post('/events/bulk-delete', [EventController::class, 'bulkDelete'])->name('event.bulk_delete');
+    Route::post('/events/bulk-category', [EventController::class, 'bulkCategory'])->name('event.bulk_category');
+    Route::post('/events/bulk-export', [EventController::class, 'bulkExport'])->name('event.bulk_export');
 });
 
-require __DIR__ . '/auth.php';
+// Google OAuth
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
+Route::get('/api/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
+
+
+require __DIR__.'/auth.php';

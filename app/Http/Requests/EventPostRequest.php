@@ -22,25 +22,20 @@ class EventPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'event_name' => ['required', 'string', 'min:3', 'max:100'],
+            'event_name' => ['required', 'string', 'max:255'],
             'event_date' => ['required', 'date'],
-            'event_time' => ['nullable', 'date_format:H:i'],
-            'event_type' => ['required', 'string', 'in:Personal,Private,Work,Reminder,Past,Future'],
+            'event_time' => ['nullable', 'string'],
+            'event_type' => ['required', 'string', 'in:Personal,Work,Reminder,Private,Birthday'],
             'fields' => ['nullable', 'array'],
-            'fields.*' => ['string', 'in:days,months,years,hours,weeks,minutes,seconds,workdays'],
-            'is_background_image' => ['nullable', 'boolean'],
-            'background_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
-            'background_gradient' => ['nullable', 'string', 'max:100'],
+            'is_background_image' => ['nullable'],
+            'background_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:4096'],
+            'background_gradient' => ['nullable', 'string'],
+            'is_recurring' => ['nullable'],
+            'recurrence_type' => ['nullable', 'string', 'in:none,yearly,monthly,weekly,daily'],
+            'tags' => ['nullable'],
+            'milestones' => ['nullable'],
+            'milestones_raw' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:2000'],
         ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'event_name.required' => 'An event name is required.',
-            'event_name.min' => 'An event name should be at least 3 characters.',
-            'event_name.max' => 'An event name must be less than 100 characters.',
-            'event_date.required' => 'An event date is required.',
-        ];       
     }
 }

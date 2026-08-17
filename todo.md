@@ -12,7 +12,7 @@
 - [x] Fix/complete dynamic background rendering on event cards (handling custom uploaded backgrounds and various gradient options).
 - [x] Expand countdown / time-lapse calculations in `App\Models\Event` to support remaining fields (weeks, minutes, seconds, workdays, hours).
 - [x] Add Calendar View and Timeline Mode for events as outlined in the project README.
-- [x] Implement event categorization filters (Personal, Work, Reminder, Past, Future) in the dashboard and navigation bar.
+- [x] Implement event categorization filters (Personal, Work, Reminder, Past, Future, Birthday) in the dashboard and navigation bar.
 - [x] Implement the search bar functionality in the navigation bar (`layouts/navigation.blade.php`).
 
 ## 3. CSV Import & Export
@@ -44,3 +44,57 @@
 ## UI/Visual Improvements
 - [x] in grid view, some cards are invisible and it's height is not uniform
 - [x] profile menu is always open/visible
+- [x] Add live live-ticking client-side countdown timer (seconds/minutes ticking in real-time) on single event view & dashboard cards.
+- [x] Add dark mode toggle with persistent local storage / user preference support.
+- [x] Implement skeleton loading state placeholders for event cards in grid and timeline view.
+- [x] Add interactive toast notifications (success / error popups) when creating, editing, and deleting events.
+- [x] Implement responsive mobile navigation drawer with active route highlights and smooth transitions.
+
+## UX & Interaction Enhancements
+- [x] Implement custom modal confirmation dialog for event deletion instead of default browser confirm alert.
+- [x] Add drag-and-drop image dropzone with instant client-side preview for event background and avatar uploads.
+- [x] Add quick-action menu on event cards (Edit, Share, Export to iCal, Delete).
+- [x] Implement keyboard shortcuts (e.g. `n` for new event, `/` to focus search, `Esc` to close modals).
+- [x] Add batch actions in dashboard (bulk delete, bulk export selected events, bulk change category).
+
+## New Features & Capabilities
+- [x] **iCal / Google Calendar Export**: Generate `.ics` files and "Add to Google Calendar" links for events.
+- [x] **PDF Export & Event Summary Cards**: Export high-resolution countdown cards or summary reports as PDF.
+- [x] **Event Sharing & Public Links**: Allow users to generate a secure shareable public link / QR code for any countdown.
+- [x] **Recurring Events**: Support recurring schedules (yearly birthdays/anniversaries, monthly milestones, weekly meetings).
+- [x] **Email & Push Reminders**: Scheduled queue worker to dispatch reminder emails / notifications (e.g. 1 day before, 1 hour before).
+- [x] **Event Tags & Multi-Categorization**: Allow custom tags (e.g. `#travel`, `#family`, `#fitness`) alongside core categories.
+- [x] **Milestone & Milestone Checklist**: Add sub-tasks/milestones checklist inside each event with progress percentage.
+
+## Data Import & Export
+- [x] Add JSON data export and import alongside existing CSV capabilities.
+- [x] Add export filtering (export only past events, only upcoming events, or specific categories).
+- [x] Provide a downloadable CSV template with sample data on the import page.
+- [x] Implement import preview & validation step before committing imported rows to database.
+
+## Public Frontend & Landing Website
+- [x] Redesign `welcome.blade.php` into a bespoke, high-converting landing page showcasing product features, live interactive demo countdown widgets, testimonials, and feature highlights.
+- [x] Add interactive live demo widget on landing page where visitors can create and preview a countdown without logging in.
+- [x] Create dedicated `Privacy Policy`, `Terms of Service`, and `About / Roadmap` public pages.
+- [x] Add OpenGraph / Twitter meta tags, favicon assets, and SEO structured data schema.
+
+## Testing & Quality Assurance
+- [x] Add Feature tests for Search and Filtering across all view modes (Grid, Timeline, Calendar).
+- [x] Add Feature tests for Profile update and avatar file uploads.
+- [x] Add Feature test for unauthorized access (ensuring users cannot view, edit, or delete another user's events).
+- [x] Add Livewire component unit tests for `UploadCSV`.
+- [x] Add browser/E2E tests with Laravel Dusk or Pest for live client interactions.
+
+## Documentation & Developer Experience
+- [x] Update `README.md` with comprehensive setup instructions, environment variables breakdown, architecture overview, and screenshots.
+- [x] Add API / internal architecture documentation detailing Event model calculations, notification dispatchers, and seeder formats.
+- [x] Add Docker / Laravel Sail setup configuration for quick local onboarding.
+- [x] Add GitHub Actions CI workflow for running linting (`php-cs-fixer`/`pint`) and automated test suites on push/PR.
+
+- [x] update to latest minor version of laravel 11
+- [x] modern date picker
+- [x] birthdays as a category
+- [x] fix error on new note blade page
+- [x] when switching back to gradient theme from custom photo background it's not working
+- [x] make the fullpage event view bigger 
+- [x] improve mobile views

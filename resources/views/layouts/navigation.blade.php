@@ -1,167 +1,147 @@
-<nav class="bg-gray-800" x-data="{ mobileMenuOpen: false, profileMenuOpen: false }">
-  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-    <div class="relative flex h-16 items-center justify-between">
-      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <!-- Mobile menu button-->
-        <button type="button"
-          class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-          @click="mobileMenuOpen = !mobileMenuOpen" type="button"
-          class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-          aria-controls="mobile-menu" aria-expanded="false">
-          <span class="absolute -inset-0.5"></span>
-          <span class="sr-only">Open main menu</span>
-          <!--
-              Icon when menu is closed.
-  
-              Menu open: "hidden", Menu closed: "block"
-            -->
-          <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            aria-hidden="true" data-slot="icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-          <!--
-              Icon when menu is open.
-  
-              Menu open: "block", Menu closed: "hidden"
-            -->
-          <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            aria-hidden="true" data-slot="icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex flex-shrink-0 items-center">
-          <img class="h-8 w-auto" src="{{ url("/logo_tme.png") }}" alt="Your Company">
-        </div>
-        <div class="hidden sm:ml-6 sm:block">
-          <div class="flex space-x-2">
-            <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium {{ !request('filter') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">All</a>
-            <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="rounded-md px-3 py-2 text-sm font-medium {{ request('filter') === 'Personal' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Personal</a>
-            <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="rounded-md px-3 py-2 text-sm font-medium {{ request('filter') === 'Work' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Work</a>
-            <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="rounded-md px-3 py-2 text-sm font-medium {{ request('filter') === 'Reminder' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Reminder</a>
-            <a href="{{ route('dashboard', ['filter' => 'Past']) }}" class="rounded-md px-3 py-2 text-sm font-medium {{ request('filter') === 'Past' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Past</a>
-            <a href="{{ route('dashboard', ['filter' => 'Future']) }}" class="rounded-md px-3 py-2 text-sm font-medium {{ request('filter') === 'Future' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Future</a>
-            <a href="{{ url('/telescope') }}" target="_blank"
-              class="flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-              <span>Telescope</span>
-            </a>
-            <a href="{{ url('/pulse') }}" target="_blank"
-              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Pulse</a>
-          </div>
-        </div>
-      </div>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <div class="mr-4 hidden md:block">
-          <form method="GET" action="{{ route('dashboard') }}">
-            @if(request('filter'))
-              <input type="hidden" name="filter" value="{{ request('filter') }}">
-            @endif
-            @if(request('view'))
-              <input type="hidden" name="view" value="{{ request('view') }}">
-            @endif
-            <label class="relative block">
-              <span class="sr-only">Search</span>
-              <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400">
-                <x-Icons.magnify />
-              </span>
-              <input
-                class="placeholder:italic placeholder:text-slate-400 block bg-gray-700 text-white w-full border border-gray-600 rounded-md py-1.5 pl-9 pr-3 shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Search events..." type="text" name="search" value="{{ request('search') }}" />
-            </label>
-          </form>
-        </div>
-        <x-new-event-button href="{{ route('event.create') }}" class="hidden sm:block">
-          New Event
-        </x-new-event-button>
-        <!-- Notifications Dropdown -->
-        <div class="relative ml-2" x-data="{ notifOpen: false }">
-          <button type="button" @click="notifOpen = !notifOpen"
-            class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-            <span class="absolute -inset-1.5"></span>
-            <span class="sr-only">View notifications</span>
-            <x-Icons.bell />
-            @if(Auth::user()->unreadNotifications->count() > 0)
-              <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
-                {{ Auth::user()->unreadNotifications->count() }}
-              </span>
-            @endif
-          </button>
-
-          <div x-show="notifOpen" @click.away="notifOpen = false"
-            class="absolute right-0 z-20 mt-2 w-72 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800"
-            x-transition:enter="transition ease-out duration-100"
-            x-transition:enter-start="transform opacity-0 scale-95"
-            x-transition:enter-end="transform opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="transform opacity-100 scale-100"
-            x-transition:leave-end="transform opacity-0 scale-95" x-cloak>
-            <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-              <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">Notifications</span>
-              <span class="text-xs text-gray-500">{{ Auth::user()->notifications()->count() }} total</span>
-            </div>
-            <div class="max-h-60 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
-              @forelse(Auth::user()->notifications()->latest()->take(5)->get() as $notification)
-                <div class="px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <p class="font-medium text-gray-900 dark:text-gray-100">{{ $notification->data['message'] ?? 'Notification received' }}</p>
-                  <span class="text-[10px] text-gray-400">{{ $notification->created_at->diffForHumans() }}</span>
+<nav x-data="{ open: false, userMenuOpen: false }" class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800 sticky top-0 z-40">
+    <!-- Primary Navigation Menu -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center gap-4 sm:gap-6">
+                <!-- Logo -->
+                <div class="shrink-0 flex items-center">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+                        <img class="block h-9 w-auto rounded-lg shadow-xs" src="{{ url('/logo_tme.png') }}" alt="TrackMyEvents">
+                        <span class="hidden sm:inline-block font-black text-lg text-gray-900 dark:text-white tracking-tight">TrackMy<span class="text-indigo-600 dark:text-indigo-400">Events</span></span>
+                    </a>
                 </div>
-              @empty
-                <div class="px-4 py-3 text-xs text-gray-500 text-center">No notifications yet</div>
-              @endforelse
+
+                <!-- Navigation Links -->
+                <div class="hidden lg:flex items-center space-x-1 sm:-my-px">
+                    <a href="{{ route('dashboard') }}" class="px-3 py-2 text-xs font-extrabold rounded-xl transition {{ request()->routeIs('dashboard') && !request('filter') ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        All Events
+                    </a>
+                    <a href="{{ route('dashboard', ['filter' => 'Birthday']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Birthday' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        🎂 Birthdays
+                    </a>
+                    <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Personal' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        Personal
+                    </a>
+                    <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Work' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        Work
+                    </a>
+                    <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Reminder' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        Reminders
+                    </a>
+                </div>
             </div>
-          </div>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:flex items-center flex-1 max-w-xs mx-4 lg:mx-6">
+                <form action="{{ route('dashboard') }}" method="GET" class="w-full relative">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search events... ('/')"
+                           class="w-full pl-9 pr-4 py-2 text-xs rounded-2xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 focus:ring-0 text-gray-800 dark:text-gray-200 placeholder-gray-400 transition">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </form>
+            </div>
+
+            <!-- Right Controls: New Event, Dark Mode, Shortcuts & User Menu -->
+            <div class="hidden sm:flex sm:items-center sm:gap-2">
+                <!-- Add Event CTA -->
+                <a href="{{ route('event.create') }}" id="new-event-btn" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-black shadow-sm transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    New Event
+                </a>
+
+                <!-- Dark Mode Toggle Button -->
+                <button type="button" onclick="window.toggleDarkMode()" class="p-2 rounded-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition" title="Toggle Dark Mode">
+                    <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+
+                <!-- Keyboard Shortcuts Help Button -->
+                <button type="button" @click="$dispatch('toggle-shortcuts-help')" class="p-2 rounded-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition font-mono text-xs font-bold" title="Keyboard Shortcuts (?)">
+                    ?
+                </button>
+
+                <!-- User Dropdown Menu -->
+                <div class="relative ml-2">
+                    <button type="button" @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300 p-1.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                        <img class="w-8 h-8 rounded-xl object-cover ring-2 ring-indigo-500/40" src="{{ asset('uploads/profile_pictures/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
+                        <span class="max-w-[100px] truncate hidden md:inline">{{ Auth::user()->name ?? 'Account' }}</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-cloak
+                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl py-2 border border-gray-100 dark:border-gray-700 text-xs z-50">
+                        <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                            <p class="font-bold text-gray-900 dark:text-white truncate">{{ Auth::user()->name ?? 'User' }}</p>
+                            <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email ?? '' }}</p>
+                        </div>
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Profile & Settings</a>
+                        <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30">
+                                Log Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hamburger (Mobile) -->
+            <div class="-mr-2 flex items-center sm:hidden">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-2xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': ! open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
+    </div>
 
-        <!-- Profile dropdown -->
-        <div class="relative ml-3" x-data="{ profileMenuOpen: false }">
-          <div>
-            <button type="button" @click="profileMenuOpen = !profileMenuOpen"
-              class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-              id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-              <span class="absolute -inset-1.5"></span>
-              <span class="sr-only">Open user menu</span>
-              <img class="h-8 w-8 rounded-full object-cover" src="{{ asset('uploads/profile_pictures/'.Auth::user()->avatar) }}"
-                alt="Profile picture">
-            </button>
-          </div>
-
-          <div x-show="profileMenuOpen" @click.away="profileMenuOpen = false" x-cloak
-            class="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800"
-            x-transition:enter="transition ease-out duration-100"
-            x-transition:enter-start="transform opacity-0 scale-95"
-            x-transition:enter-end="transform opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="transform opacity-100 scale-100"
-            x-transition:leave-end="transform opacity-0 scale-95">
-            <a href="{{ route('profile.edit') }}"
-              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-500 hover:text-white" role="menuitem"
-              tabindex="-1" id="user-menu-item-0">Your Profile</a>
-            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-500 hover:text-white"
-              role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
-            <form action="{{ route('logout') }}" method="POST" class="hover:bg-indigo-500">
-              @csrf
-              <button class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:text-white text-left w-full" type="submit">Sign
-                out</button>
+    <!-- Responsive Mobile Drawer Menu -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div class="p-4">
+            <form action="{{ route('dashboard') }}" method="GET" class="w-full relative mb-3">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search events..."
+                       class="w-full pl-9 pr-4 py-2.5 text-xs rounded-2xl bg-gray-100 dark:bg-gray-800 border-transparent text-gray-800 dark:text-gray-200">
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Mobile menu, show/hide based on menu state. -->
-  <div class="sm:hidden" id="mobile-menu" x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
-    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95"
-    x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
-    <div class="space-y-1 px-2 pb-3 pt-2">
-      <a href="{{ route('dashboard') }}" class="block rounded-md px-3 py-2 text-base font-medium {{ !request('filter') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">All</a>
-      <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="block rounded-md px-3 py-2 text-base font-medium {{ request('filter') === 'Personal' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Personal</a>
-      <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="block rounded-md px-3 py-2 text-base font-medium {{ request('filter') === 'Work' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Work</a>
-      <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="block rounded-md px-3 py-2 text-base font-medium {{ request('filter') === 'Reminder' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Reminder</a>
-      <a href="{{ route('dashboard', ['filter' => 'Past']) }}" class="block rounded-md px-3 py-2 text-base font-medium {{ request('filter') === 'Past' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Past</a>
-      <a href="{{ route('dashboard', ['filter' => 'Future']) }}" class="block rounded-md px-3 py-2 text-base font-medium {{ request('filter') === 'Future' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">Future</a>
+            <a href="{{ route('event.create') }}" class="block w-full text-center py-3 bg-indigo-600 text-white rounded-2xl text-xs font-black shadow-md mb-3">
+                + Create New Event
+            </a>
+        </div>
+
+        <div class="pt-2 pb-3 space-y-1 px-2">
+            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request()->routeIs('dashboard') && !request('filter') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">All Events</a>
+            <a href="{{ route('dashboard', ['filter' => 'Birthday']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Birthday' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">🎂 Birthdays</a>
+            <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Personal' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Personal</a>
+            <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Work' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Work</a>
+            <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Reminder' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Reminders</a>
+        </div>
+
+        <div class="pt-4 pb-4 border-t border-gray-200 dark:border-gray-800 px-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <img class="w-9 h-9 rounded-xl object-cover" src="{{ asset('uploads/profile_pictures/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
+                    <div>
+                        <div class="font-bold text-xs text-gray-800 dark:text-gray-200">{{ Auth::user()->name ?? 'User' }}</div>
+                        <div class="text-[10px] text-gray-500">{{ Auth::user()->email ?? '' }}</div>
+                    </div>
+                </div>
+                <button type="button" onclick="window.toggleDarkMode()" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs font-bold">
+                    🌓 Mode
+                </button>
+            </div>
+
+            <div class="space-y-1">
+                <a href="{{ route('profile.edit') }}" class="block py-2 text-xs text-gray-600 dark:text-gray-300 font-semibold">Profile & Settings</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full text-left py-2 text-xs text-rose-600 font-bold">
+                        Log Out
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>
