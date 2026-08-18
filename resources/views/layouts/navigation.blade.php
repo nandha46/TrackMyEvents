@@ -95,6 +95,8 @@
                         </div>
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Profile & Settings</a>
                         <a href="{{ route('profile.pexels_stats') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Pexels Rate Limits</a>
+                        <a href="{{ url('/pulse') }}" target="_blank" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Pulse Dashboard &nearr;</a>
+                        <a href="{{ url('/telescope') }}" target="_blank" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Telescope &nearr;</a>
                         <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -162,6 +164,9 @@
 
             <div class="space-y-1">
                 <a href="{{ route('profile.edit') }}" class="block py-2 text-xs text-gray-600 dark:text-gray-300 font-semibold">Profile & Settings</a>
+                <a href="{{ route('profile.pexels_stats') }}" class="block py-2 text-xs text-gray-600 dark:text-gray-300 font-semibold">Pexels Rate Limits</a>
+                <a href="{{ url('/pulse') }}" target="_blank" class="block py-2 text-xs text-gray-600 dark:text-gray-300 font-semibold">Pulse Dashboard &nearr;</a>
+                <a href="{{ url('/telescope') }}" target="_blank" class="block py-2 text-xs text-gray-600 dark:text-gray-300 font-semibold">Telescope &nearr;</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="block w-full text-left py-2 text-xs text-rose-600 font-bold">
