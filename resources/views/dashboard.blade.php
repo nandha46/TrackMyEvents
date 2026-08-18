@@ -20,7 +20,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
             <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-              {{ $currentFilter ? $currentFilter . ' Events' : 'All Events' }}
+              {{ $currentTag ? '#' . $currentTag . ' Events' : ($currentFilter ? $currentFilter . ' Events' : 'All Events') }}
               @if($currentSearch)
                 <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 block sm:inline mt-0.5">&bull; search: "{{ $currentSearch }}"</span>
               @endif
@@ -28,31 +28,21 @@
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Showing {{ $events->total() }} total tracking items</p>
           </div>
 
-          <!-- Category Pills & View Switcher -->
+          <!-- Tags Filter Chips & View Switcher -->
           <div class="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
             
-            <!-- Category Filter Pills (Horizontal Scroll on Mobile) -->
+            <!-- Dynamic Tags Filter Chips (Horizontal Scroll) -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full sm:max-w-none">
               <a href="{{ route('dashboard') }}"
-                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ !request('filter') ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
+                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ !request('tag') && !request('filter') ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
                 All
               </a>
-              <a href="{{ route('dashboard', ['filter' => 'Birthday']) }}"
-                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ request('filter') === 'Birthday' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
-                🎂 Birthdays
-              </a>
-              <a href="{{ route('dashboard', ['filter' => 'Personal']) }}"
-                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ request('filter') === 'Personal' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
-                Personal
-              </a>
-              <a href="{{ route('dashboard', ['filter' => 'Work']) }}"
-                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ request('filter') === 'Work' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
-                Work
-              </a>
-              <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}"
-                 class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ request('filter') === 'Reminder' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
-                Reminders
-              </a>
+              @foreach(($availableTags ?? ['Birthday', 'Personal', 'Work', 'Travel', 'Reminder']) as $tag)
+                <a href="{{ route('dashboard', ['tag' => $tag]) }}"
+                   class="px-3 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition {{ request('tag') === $tag ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200' }}">
+                  #{{ $tag }}
+                </a>
+              @endforeach
             </div>
 
             <!-- View Switcher -->
@@ -142,15 +132,34 @@
           {{-- Timeline Mode --}}
           <div class="relative border-l-2 border-indigo-500 dark:border-indigo-400 ml-4 md:ml-8 my-6 space-y-6 text-left">
             @foreach($events as $event)
+            @php
+              $isPrivateEvent = ($event->event_type === 'Private') || (is_array($event->tags) && in_array('private', array_map('strtolower', $event->tags)));
+            @endphp
             <div class="relative pl-6 md:pl-8">
               <div class="absolute -left-2.5 top-2 w-5 h-5 rounded-full border-4 border-white dark:border-gray-900 bg-indigo-600"></div>
-              <div class="bg-white dark:bg-gray-800/80 p-5 sm:p-6 rounded-3xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 transition">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
+              <div class="bg-white dark:bg-gray-800/80 p-5 sm:p-6 rounded-3xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 transition relative overflow-hidden">
+                
+                @if($isPrivateEvent)
+                  <div x-show="!$store.privateLock.isUnlocked" @click="$store.privateLock.openModal()" class="absolute inset-0 z-20 bg-gray-950/70 backdrop-blur-md flex items-center justify-between p-6 cursor-pointer text-white">
+                    <div class="flex items-center gap-3">
+                      <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      <span class="text-xs font-black uppercase tracking-wider">Private Event (Locked)</span>
+                    </div>
+                    <span class="text-xs text-indigo-300 underline font-bold">Enter PIN &rarr;</span>
+                  </div>
+                @endif
+
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2" :class="{ 'filter blur-sm': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                   <div class="flex flex-wrap items-center gap-2">
                     <input type="checkbox" :checked="selectedIds.includes({{ $event->id }})" @click="toggleSelect({{ $event->id }})" class="w-4 h-4 text-indigo-600 rounded border-gray-300">
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ $event->isPastEvent() ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
                       {{ $event->isPastEvent() ? 'Past' : 'Upcoming' }} ({{ $event->event_type }})
                     </span>
+                    @if(is_array($event->tags))
+                      @foreach($event->tags as $t)
+                        <span class="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold rounded-full">#{{ $t }}</span>
+                      @endforeach
+                    @endif
                     @if($event->is_recurring && $event->recurrence_type !== 'none')
                       <span class="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold rounded-full">
                         {{ ucfirst($event->recurrence_type) }}
@@ -160,11 +169,11 @@
                   <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ $event->event_date }} {{ $event->event_time ?? '' }}</span>
                 </div>
                 
-                <a href="{{ route('event.show', $event->id) }}" class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                <a href="{{ route('event.show', $event->id) }}" class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition" :class="{ 'filter blur-sm': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                   {{ $event->event_name }}
                 </a>
 
-                <div x-data="countdown('{{ $event->getTargetDateTime()->format('Y-m-d') }}', '{{ $event->getTargetDateTime()->format('H:i:s') }}', {{ $event->isPastEvent() ? 'true' : 'false' }})" class="mt-2 text-indigo-600 dark:text-indigo-400 font-black font-mono text-base sm:text-lg">
+                <div x-data="countdown('{{ $event->getTargetDateTime()->format('Y-m-d') }}', '{{ $event->getTargetDateTime()->format('H:i:s') }}', {{ $event->isPastEvent() ? 'true' : 'false' }})" class="mt-2 text-indigo-600 dark:text-indigo-400 font-black font-mono text-base sm:text-lg" :class="{ 'filter blur-sm': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                   <span x-text="years + 'Y ' + months + 'M ' + days + 'D ' + String(hours).padStart(2,'0') + ':' + String(minutes).padStart(2,'0') + ':' + String(seconds).padStart(2,'0')"></span>
                   <span class="text-xs text-gray-500 font-normal font-sans" x-text="isPast ? '(since)' : '(remaining)'"></span>
                 </div>
@@ -189,12 +198,29 @@
                 </h4>
                 <div class="space-y-2">
                   @foreach($monthEvents as $event)
-                    <a href="{{ route('event.show', $event->id) }}" class="block p-3 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:border-indigo-500 border border-transparent transition">
-                      <div class="flex justify-between items-start">
+                    @php
+                      $isPrivate = ($event->event_type === 'Private') || (is_array($event->tags) && in_array('private', array_map('strtolower', $event->tags)));
+                    @endphp
+                    <a href="{{ route('event.show', $event->id) }}" 
+                       @if($isPrivate) @click.prevent="if(!$store.privateLock.isUnlocked) { $store.privateLock.openModal(); } else { window.location.href = '{{ route('event.show', $event->id) }}'; }" @endif
+                       class="block p-3 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:border-indigo-500 border border-transparent transition relative overflow-hidden">
+                      
+                      @if($isPrivate)
+                        <div x-show="!$store.privateLock.isUnlocked" class="absolute inset-0 bg-gray-900/80 backdrop-blur-xs flex items-center justify-center text-[11px] font-bold text-indigo-300 gap-1.5">
+                          <span>🔒 Private Event</span>
+                        </div>
+                      @endif
+
+                      <div class="flex justify-between items-start" :class="{ 'filter blur-xs': {{ $isPrivate ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                         <span class="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate">{{ $event->event_name }}</span>
                         <span class="text-[10px] font-black px-2 py-0.5 bg-white dark:bg-gray-800 text-indigo-600 rounded-lg shadow-xs">{{ \Carbon\Carbon::parse($event->event_date)->format('d') }}</span>
                       </div>
-                      <p class="text-[10px] text-gray-500 mt-1">{{ $event->event_type }} &bull; {{ $event->isPastEvent() ? 'Past' : 'Upcoming' }}</p>
+                      <p class="text-[10px] text-gray-500 mt-1" :class="{ 'filter blur-xs': {{ $isPrivate ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
+                        {{ $event->event_type }}
+                        @if(is_array($event->tags) && count($event->tags) > 0)
+                          &bull; #{{ $event->tags[0] }}
+                        @endif
+                      </p>
                     </a>
                   @endforeach
                 </div>
@@ -208,25 +234,45 @@
           {{-- Cards Grid View --}}
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             @foreach($events as $event)
+              @php
+                $isPrivateEvent = ($event->event_type === 'Private') || (is_array($event->tags) && in_array('private', array_map('strtolower', $event->tags)));
+              @endphp
               <div class="relative group rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 h-80 flex flex-col justify-between border border-gray-200/50 dark:border-gray-700/60 transform hover:-translate-y-1.5"
                    x-data="{ cardMenuOpen: false }">
                 
                 <!-- Background Layer -->
                 @if($event->is_background_image)
-                  <img src="{{ asset('uploads/backgrounds/'.$event->background) }}" alt="{{ $event->event_name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">
+                  <img src="{{ asset('uploads/backgrounds/'.$event->background) }}" alt="{{ $event->event_name }}" 
+                       :class="{ 'filter blur-xl scale-110': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }"
+                       class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700" loading="lazy">
                   <div class="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-black/40 to-black/30"></div>
                 @else
-                  <div class="absolute inset-0 bg-gradient-to-br {{ $event->getGradientClasses() }}"></div>
+                  <div :class="{ 'filter blur-md': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }" class="absolute inset-0 bg-gradient-to-br {{ $event->getGradientClasses() }} transition-all"></div>
                   <div class="absolute inset-0 bg-black/15"></div>
                 @endif
 
-                <!-- Card Top: Category Badge, Recurring Badge & Quick Menu -->
-                <div class="relative z-10 p-4 sm:p-5 flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
+                <!-- Blur Lock Overlay for Private Event when locked -->
+                @if($isPrivateEvent)
+                  <div x-show="!$store.privateLock.isUnlocked" @click.stop="$store.privateLock.openModal()" class="absolute inset-0 z-20 bg-gray-950/70 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center cursor-pointer transition">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-3 text-indigo-400">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                  </div>
+                @endif
+
+                <!-- Card Top: Category/Tags Badge, Recurring Badge & Quick Menu -->
+                <div class="relative z-10 p-4 sm:p-5 flex items-center justify-between"
+                     :class="{ 'opacity-20 pointer-events-none': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
+                  <div class="flex flex-wrap items-center gap-1.5">
                     <input type="checkbox" :checked="selectedIds.includes({{ $event->id }})" @click.stop="toggleSelect({{ $event->id }})" class="w-4 h-4 text-indigo-600 bg-white/40 border-white/50 rounded-md focus:ring-0 cursor-pointer">
                     <span class="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider text-white">
                       {{ $event->event_type }}
                     </span>
+                    @if(is_array($event->tags) && count($event->tags) > 0)
+                      <span class="px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold text-white/90">
+                        #{{ $event->tags[0] }}
+                      </span>
+                    @endif
                     @if($event->is_recurring && $event->recurrence_type !== 'none')
                       <span class="px-2 py-0.5 bg-black/30 backdrop-blur-md rounded-full text-[10px] font-bold text-indigo-200 uppercase">
                         {{ ucfirst($event->recurrence_type) }}
@@ -256,7 +302,8 @@
                 </div>
 
                 <!-- Card Center & Bottom: Clickable Link -->
-                <a href="{{ route('event.show', $event->id) }}" class="relative z-10 p-5 flex flex-col justify-end text-white text-center flex-1">
+                <a href="{{ route('event.show', $event->id) }}" class="relative z-10 p-5 flex flex-col justify-end text-white text-center flex-1"
+                   :class="{ 'opacity-0 pointer-events-none': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                   <div>
                     <h3 class="text-xl sm:text-2xl font-black mb-1 line-clamp-1 tracking-tight drop-shadow-sm">{{ $event->event_name }}</h3>
                     <p class="text-xs text-white/80 font-medium mb-3">{{ $event->event_date }} {{ $event->event_time ? '&bull; ' . date('h:i A', strtotime($event->event_time)) : '' }}</p>

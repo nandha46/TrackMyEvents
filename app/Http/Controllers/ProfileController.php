@@ -57,7 +57,6 @@ class ProfileController extends Controller
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('avatars', $filename, 'public');
 
-            // Delete old avatar if not default
             if ($user->avatar && $user->avatar !== 'default.png' && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
                 Storage::disk('public')->delete('avatars/' . $user->avatar);
             }

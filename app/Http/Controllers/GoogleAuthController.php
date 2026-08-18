@@ -45,7 +45,7 @@ class GoogleAuthController extends Controller
                     $avatarContents = @file_get_contents($googleUser->getAvatar());
                     if ($avatarContents) {
                         $avatarName = 'google_' . uniqid() . '.jpg';
-                        file_put_contents(public_path('uploads/profile_pictures/' . $avatarName), $avatarContents);
+                        file_put_contents(public_path('storage/avatars/' . $avatarName), $avatarContents);
                     }
                 } catch (Throwable $e) {
                     \Illuminate\Support\Facades\Log::warning('Google avatar download failed: ' . $e->getMessage());

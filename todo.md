@@ -98,3 +98,15 @@
 - [x] when switching back to gradient theme from custom photo background it's not working
 - [x] make the fullpage event view bigger 
 - [x] improve mobile views
+
+- [x] add pexels.com as an background image service alongside gradient and custom photo background
+- [x] hit the pexel search endpoint and show the paginated results for user to select and store a copy in the disk for later user with search keyword
+- [x] if the users tries to select image before entering event name show them Curated Photos from pexels
+- [x] add prominent link to Pexels in homepage 
+
+- [x] add Linking back to a Photo if used a photo by pexels in event details page
+- [x] tell me where to store the pexels api key
+- [x] show the rate limit headers statistics on a individual page under profile
+
+- [x] private events should be blurred unless unlocked by entering 4 digit pin. Lock icon on nav bar to enable/disable private events visibility. timeout is 5 minutes
+- [x] instead of categories events should be organized by tags

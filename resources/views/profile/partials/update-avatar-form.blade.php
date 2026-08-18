@@ -17,7 +17,7 @@
                     <img class="inline-block w-32 h-32 rounded-full object-cover ring-4 ring-indigo-500" :src="previewUrl" alt="Avatar preview">
                 </template>
                 <template x-if="!previewUrl">
-                    <img class="inline-block w-32 h-32 rounded-full object-cover ring-2 ring-gray-300 dark:ring-gray-600" alt="{{ Auth::user()->name }}" src="{{ asset('uploads/profile_pictures/'.Auth::user()->avatar) }}">
+                    <img class="inline-block w-32 h-32 rounded-full object-cover ring-2 ring-gray-300 dark:ring-gray-600" alt="{{ Auth::user()->name }}" src="{{ asset('storage/avatars/'.Auth::user()->avatar) }}">
                 </template>
             </div>
             <div class="flex-1 w-full">

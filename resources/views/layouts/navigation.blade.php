@@ -12,21 +12,22 @@
                 </div>
 
                 <!-- Navigation Links -->
+                <!-- Navigation Links (Tags based) -->
                 <div class="hidden lg:flex items-center space-x-1 sm:-my-px">
-                    <a href="{{ route('dashboard') }}" class="px-3 py-2 text-xs font-extrabold rounded-xl transition {{ request()->routeIs('dashboard') && !request('filter') ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                    <a href="{{ route('dashboard') }}" class="px-3 py-2 text-xs font-extrabold rounded-xl transition {{ request()->routeIs('dashboard') && !request('tag') && !request('filter') ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
                         All Events
                     </a>
-                    <a href="{{ route('dashboard', ['filter' => 'Birthday']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Birthday' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
-                        🎂 Birthdays
+                    <a href="{{ route('dashboard', ['tag' => 'Birthday']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('tag') === 'Birthday' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        🎂 #Birthday
                     </a>
-                    <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Personal' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
-                        Personal
+                    <a href="{{ route('dashboard', ['tag' => 'Personal']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('tag') === 'Personal' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        #Personal
                     </a>
-                    <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Work' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
-                        Work
+                    <a href="{{ route('dashboard', ['tag' => 'Work']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('tag') === 'Work' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        #Work
                     </a>
-                    <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('filter') === 'Reminder' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
-                        Reminders
+                    <a href="{{ route('dashboard', ['tag' => 'Travel']) }}" class="px-3 py-2 text-xs font-bold rounded-xl transition {{ request('tag') === 'Travel' ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}">
+                        ✈️ #Travel
                     </a>
                 </div>
             </div>
@@ -34,14 +35,33 @@
             <!-- Search Bar (Desktop) -->
             <div class="hidden md:flex items-center flex-1 max-w-xs mx-4 lg:mx-6">
                 <form action="{{ route('dashboard') }}" method="GET" class="w-full relative">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search events... ('/')"
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search events or #tags... ('/')"
                            class="w-full pl-9 pr-4 py-2 text-xs rounded-2xl bg-gray-100 dark:bg-gray-800 border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 focus:ring-0 text-gray-800 dark:text-gray-200 placeholder-gray-400 transition">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </form>
             </div>
 
-            <!-- Right Controls: New Event, Dark Mode, Shortcuts & User Menu -->
+            <!-- Right Controls: Private Lock Toggle, New Event, Dark Mode, Shortcuts & User Menu -->
             <div class="hidden sm:flex sm:items-center sm:gap-2">
+                <!-- Private Events Lock/Unlock Toggle Button -->
+                <button type="button" @click="$store.privateLock.toggleLock()" 
+                        :title="$store.privateLock.isUnlocked ? 'Private events unlocked (Click to lock). Auto-locks in ' + $store.privateLock.formattedRemaining : 'Private events locked (Click to unlock with 4-digit PIN)'"
+                        :class="$store.privateLock.isUnlocked ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-200'"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                    <template x-if="!$store.privateLock.isUnlocked">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span class="hidden md:inline">Locked</span>
+                        </span>
+                    </template>
+                    <template x-if="$store.privateLock.isUnlocked">
+                        <span class="flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-emerald-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                            <span class="font-mono text-[11px]" x-text="$store.privateLock.formattedRemaining"></span>
+                        </span>
+                    </template>
+                </button>
+
                 <!-- Add Event CTA -->
                 <a href="{{ route('event.create') }}" id="new-event-btn" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-black shadow-sm transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
@@ -62,7 +82,7 @@
                 <!-- User Dropdown Menu -->
                 <div class="relative ml-2">
                     <button type="button" @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300 p-1.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                        <img class="w-8 h-8 rounded-xl object-cover ring-2 ring-indigo-500/40" src="{{ asset('uploads/profile_pictures/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
+                        <img class="w-8 h-8 rounded-xl object-cover ring-2 ring-indigo-500/40" src="{{ asset('storage/avatars/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
                         <span class="max-w-[100px] truncate hidden md:inline">{{ Auth::user()->name ?? 'Account' }}</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
@@ -74,6 +94,7 @@
                             <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email ?? '' }}</p>
                         </div>
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Profile & Settings</a>
+                        <a href="{{ route('profile.pexels_stats') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 font-semibold">Pexels Rate Limits</a>
                         <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -112,25 +133,31 @@
         </div>
 
         <div class="pt-2 pb-3 space-y-1 px-2">
-            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request()->routeIs('dashboard') && !request('filter') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">All Events</a>
-            <a href="{{ route('dashboard', ['filter' => 'Birthday']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Birthday' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">🎂 Birthdays</a>
-            <a href="{{ route('dashboard', ['filter' => 'Personal']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Personal' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Personal</a>
-            <a href="{{ route('dashboard', ['filter' => 'Work']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Work' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Work</a>
-            <a href="{{ route('dashboard', ['filter' => 'Reminder']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('filter') === 'Reminder' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">Reminders</a>
+            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request()->routeIs('dashboard') && !request('tag') && !request('filter') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">All Events</a>
+            <a href="{{ route('dashboard', ['tag' => 'Birthday']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('tag') === 'Birthday' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">🎂 #Birthday</a>
+            <a href="{{ route('dashboard', ['tag' => 'Personal']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('tag') === 'Personal' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">#Personal</a>
+            <a href="{{ route('dashboard', ['tag' => 'Work']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('tag') === 'Work' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">#Work</a>
+            <a href="{{ route('dashboard', ['tag' => 'Travel']) }}" class="block px-3 py-2 rounded-xl text-xs font-bold {{ request('tag') === 'Travel' ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40' : 'text-gray-600 dark:text-gray-300' }}">✈️ #Travel</a>
         </div>
 
         <div class="pt-4 pb-4 border-t border-gray-200 dark:border-gray-800 px-4">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <img class="w-9 h-9 rounded-xl object-cover" src="{{ asset('uploads/profile_pictures/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
+                    <img class="w-9 h-9 rounded-xl object-cover" src="{{ asset('storage/avatars/'.(Auth::user()->avatar ?? 'default.png')) }}" alt="{{ Auth::user()->name ?? 'User' }}">
                     <div>
                         <div class="font-bold text-xs text-gray-800 dark:text-gray-200">{{ Auth::user()->name ?? 'User' }}</div>
                         <div class="text-[10px] text-gray-500">{{ Auth::user()->email ?? '' }}</div>
                     </div>
                 </div>
-                <button type="button" onclick="window.toggleDarkMode()" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs font-bold">
-                    🌓 Mode
-                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="$store.privateLock.toggleLock()" class="p-2 rounded-xl text-xs font-bold"
+                            :class="$store.privateLock.isUnlocked ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'">
+                        <span x-text="$store.privateLock.isUnlocked ? '🔓 ' + $store.privateLock.formattedRemaining : '🔒 Lock'"></span>
+                    </button>
+                    <button type="button" onclick="window.toggleDarkMode()" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs font-bold">
+                        🌓 Mode
+                    </button>
+                </div>
             </div>
 
             <div class="space-y-1">

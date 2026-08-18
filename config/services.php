@@ -39,6 +39,12 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID', null),
         'client_secret' => env('GOOGLE_CLIENT_SECRET', null),
         'redirect' => env('GOOGLE_REDIRECT_URL', null),
-    ]
+    ],
+
+    'pexels' => [
+        'key' => env('PEXELS_API_KEY', ''),
+        'base_url' => env('PEXELS_BASE_URL', 'https://api.pexels.com/v1'),
+        'verify_ssl' => env('PEXELS_VERIFY_SSL', false),
+    ],
 
 ];

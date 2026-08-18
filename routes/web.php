@@ -45,6 +45,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/events/bulk-delete', [EventController::class, 'bulkDelete'])->name('event.bulk_delete');
     Route::post('/events/bulk-category', [EventController::class, 'bulkCategory'])->name('event.bulk_category');
     Route::post('/events/bulk-export', [EventController::class, 'bulkExport'])->name('event.bulk_export');
+
+    // Pexels API Endpoints
+    Route::get('/pexels/search', [\App\Http\Controllers\PexelsController::class, 'search'])->name('pexels.search');
+    Route::post('/pexels/download', [\App\Http\Controllers\PexelsController::class, 'download'])->name('pexels.download');
+    Route::get('/profile/pexels-stats', [\App\Http\Controllers\PexelsController::class, 'rateLimits'])->name('profile.pexels_stats');
+
+    // Private Events PIN Protection Endpoints
+    Route::get('/private-events/status', [\App\Http\Controllers\PrivateLockController::class, 'checkStatus'])->name('private.status');
+    Route::post('/private-events/verify-pin', [\App\Http\Controllers\PrivateLockController::class, 'verifyPin'])->name('private.verify_pin');
+    Route::post('/private-events/set-pin', [\App\Http\Controllers\PrivateLockController::class, 'setPin'])->name('private.set_pin');
 });
 
 // Google OAuth

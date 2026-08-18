@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Pulse::user(fn ($user) => [
             'name' => $user->name,
             'extra' => $user->email,
-            'avatar' => 'uploads/profile_pictures/'.$user->avatar,
+            'avatar' => 'storage/avatars/'.$user->avatar,
         ]);
         
         if(Auth::guard('web')->check()){

@@ -130,6 +130,56 @@
             </div>
         </div>
 
+        <!-- Global 4-Digit PIN Unlock Modal for Private Events -->
+        <div x-data="privateLockModal" 
+             x-show="$store.privateLock.modalOpen" 
+             @open-pin-modal.window="$store.privateLock.openModal()" 
+             @close-modals.window="$store.privateLock.closeModal()" 
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+            <div @click.away="$store.privateLock.closeModal()" 
+                 x-show="$store.privateLock.modalOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-gray-200/80 dark:border-gray-800 text-center">
+                
+                <div class="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+
+                <h3 class="text-xl font-black text-gray-900 dark:text-white mb-1">Unlock Private Events</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Enter your 4-digit PIN to unblur private events for 5 minutes.</p>
+
+                <form @submit.prevent="submitPin()" class="space-y-4">
+                    <div>
+                        <input type="password" maxlength="4" pattern="[0-9]*" inputmode="numeric" 
+                               x-ref="pinInputField"
+                               x-model="pinInput" 
+                               placeholder="••••" 
+                               class="w-36 mx-auto text-center tracking-[0.6em] font-mono text-2xl font-black px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div x-show="errorMessage" x-text="errorMessage" class="text-xs text-rose-500 font-bold"></div>
+
+                    <div class="flex gap-2.5 pt-2">
+                        <button type="button" @click="$store.privateLock.closeModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl text-xs font-bold transition">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="loading || pinInput.length !== 4"
+                                :class="pinInput.length === 4 ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed'"
+                                class="flex-1 py-3 rounded-2xl text-xs font-black transition flex items-center justify-center gap-1.5">
+                            <span x-show="!loading">Unlock</span>
+                            <span x-show="loading" class="inline-block animate-spin">&bull;</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="w-full text-center py-6 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200/50 dark:border-gray-800/80 mt-12 bg-white/50 dark:bg-gray-900/50">
             <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">

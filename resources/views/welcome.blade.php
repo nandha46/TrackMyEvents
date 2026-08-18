@@ -310,6 +310,18 @@
                 <a href="{{ route('terms') }}" class="hover:text-indigo-600 transition">Terms of Service</a>
                 <a href="{{ route('login') }}" class="hover:text-indigo-600 transition">Sign In</a>
             </div>
+
+            <!-- Pexels Attribution & Official Logos -->
+            <div class="flex items-center gap-3">
+                <a href="https://www.pexels.com" target="_blank" rel="noopener" class="text-xs text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                    Photos provided by Pexels
+                </a>
+                <a href="https://www.pexels.com" target="_blank" rel="noopener">
+                    <img src="https://images.pexels.com/lib/api/pexels.png" class="h-6 dark:hidden" alt="Pexels Logo" />
+                    <img src="https://images.pexels.com/lib/api/pexels-white.png" class="h-6 hidden dark:block" alt="Pexels Logo" />
+                </a>
+            </div>
+
             <p class="text-xs">&copy; {{ date('Y') }} TrackMyEvents. All rights reserved.</p>
         </div>
     </footer>

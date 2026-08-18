@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
+        'private_pin',
     ];
 
     /**
@@ -33,7 +34,33 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'private_pin',
     ];
+
+    /**
+     * Check if the user has set a 4-digit private event PIN.
+     */
+    public function hasPrivatePin(): bool
+    {
+        return !empty($this->private_pin);
+    }
+
+    /**
+     * Verify provided 4-digit PIN against stored hash or plaintext PIN.
+     */
+    public function verifyPrivatePin(string $pin): bool
+    {
+        if (empty($this->private_pin)) {
+            return false;
+        }
+
+        // Support both hashed and legacy/direct string PIN
+        if (\Illuminate\Support\Facades\Hash::check($pin, $this->private_pin)) {
+            return true;
+        }
+
+        return $this->private_pin === $pin;
+    }
 
     /**
      * The model's default values

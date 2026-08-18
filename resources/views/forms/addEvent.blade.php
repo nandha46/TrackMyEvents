@@ -51,16 +51,16 @@
                         </div>
                     </div>
 
-                    <!-- Category (with Birthday) & Recurrence -->
+                    <!-- Category & Recurrence -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="event_type" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+                            <label for="event_type" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Category / Privacy</label>
                             <select name="event_type" id="event_type" class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="Personal" {{ old('event_type') === 'Personal' ? 'selected' : '' }}>Personal</option>
                                 <option value="Birthday" {{ old('event_type') === 'Birthday' ? 'selected' : '' }}>🎂 Birthday</option>
                                 <option value="Work" {{ old('event_type') === 'Work' ? 'selected' : '' }}>Work</option>
                                 <option value="Reminder" {{ old('event_type') === 'Reminder' ? 'selected' : '' }}>Reminder</option>
-                                <option value="Private" {{ old('event_type') === 'Private' ? 'selected' : '' }}>Private</option>
+                                <option value="Private" {{ old('event_type') === 'Private' ? 'selected' : '' }}>🔒 Private (PIN Protected)</option>
                             </select>
                         </div>
 
@@ -77,8 +77,36 @@
                         </div>
                     </div>
 
-                    <!-- Visual Theme Toggle (Gradient vs Custom Photo) -->
-                    <div>
+                    <!-- Tags Input (Interactive Tag Chips) -->
+                    <div x-data="{
+                        tagsStr: '{{ old('tags', '') }}',
+                        addTag(tag) {
+                            let current = this.tagsStr.split(',').map(t => t.trim()).filter(Boolean);
+                            if (!current.includes(tag)) {
+                                current.push(tag);
+                                this.tagsStr = current.join(', ');
+                            }
+                        }
+                    }">
+                        <label for="tags" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Tags (Organize your events)</label>
+                        <input type="text" name="tags" id="tags" x-model="tagsStr"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+                               placeholder="e.g. vacation, summer, family, milestone, travel">
+                        
+                        <!-- Quick Click Suggestions -->
+                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                            <span class="text-[10px] text-gray-400 font-bold">Popular tags:</span>
+                            @foreach(['Vacation', 'Travel', 'Family', 'Fitness', 'Milestone', 'Finance', 'Party', 'Meeting', 'Anniversary'] as $tag)
+                                <button type="button" @click="addTag('{{ $tag }}')"
+                                        class="px-2.5 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-600 dark:text-gray-300 hover:text-indigo-600 text-[11px] font-bold transition">
+                                    + #{{ $tag }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Visual Theme Toggle (Gradient vs Custom Photo vs Pexels) -->
+                    <div x-data="pexelsPicker()">
                         <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-2">Visual Theme</label>
                         
                         <!-- Segmented control switch -->
@@ -91,13 +119,26 @@
                             <button type="button" @click="selectedTheme = 'image'"
                                     :class="selectedTheme === 'image' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold' : 'text-gray-500 dark:text-gray-400 font-medium'"
                                     class="flex-1 sm:flex-initial px-4 py-2 text-xs rounded-xl transition">
-                                Custom Photo Background
+                                Custom Photo Upload
+                            </button>
+                            <button type="button" @click="selectedTheme = 'pexels'; loadContextualOrCurated(document.getElementById('event_name')?.value)"
+                                    :class="selectedTheme === 'pexels' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold' : 'text-gray-500 dark:text-gray-400 font-medium'"
+                                    class="flex-1 sm:flex-initial px-4 py-2 text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+                                <span>Pexels Photos</span>
+                                <span class="text-[9px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded font-black">Free</span>
                             </button>
                         </div>
 
-                        <input type="hidden" name="is_background_image" :value="selectedTheme === 'image' ? '1' : '0'">
+                        <input type="hidden" name="is_background_image" :value="selectedTheme !== 'gradient' ? '1' : '0'">
 
-                        <!-- Gradient Palettes -->
+                        <!-- Hidden Pexels Payload Inputs -->
+                        <input type="hidden" name="pexels_id" :value="selectedTheme === 'pexels' && selectedPhoto ? selectedPhoto.id : ''">
+                        <input type="hidden" name="pexels_photographer" :value="selectedTheme === 'pexels' && selectedPhoto ? selectedPhoto.photographer : ''">
+                        <input type="hidden" name="pexels_photographer_url" :value="selectedTheme === 'pexels' && selectedPhoto ? selectedPhoto.photographer_url : ''">
+                        <input type="hidden" name="pexels_photo_url" :value="selectedTheme === 'pexels' && selectedPhoto ? selectedPhoto.url : ''">
+                        <input type="hidden" name="pexels_download_url" :value="selectedTheme === 'pexels' && selectedPhoto ? (selectedPhoto.src?.large || selectedPhoto.src?.original) : ''">
+
+                        <!-- 1. Gradient Palettes -->
                         <div x-show="selectedTheme === 'gradient'" class="grid grid-cols-4 gap-2.5">
                             @foreach([
                                 'gradient-1' => 'from-purple-500 to-indigo-600',
@@ -117,7 +158,7 @@
                             @endforeach
                         </div>
 
-                        <!-- Drag and drop image dropzone -->
+                        <!-- 2. Custom Drag and drop image dropzone -->
                         <div x-show="selectedTheme === 'image'" x-data="dropzone()" x-cloak class="mt-2">
                             <div @dragover.prevent="isDragging = true"
                                  @dragleave.prevent="isDragging = false"
@@ -143,6 +184,80 @@
                                 </template>
 
                                 <input type="file" name="background_image" x-ref="fileInput" @change="handleFileSelect($event)" accept="image/*" class="sr-only">
+                            </div>
+                        </div>
+
+                        <!-- 3. Pexels Gallery Picker -->
+                        <div x-show="selectedTheme === 'pexels'" x-cloak class="mt-2 space-y-4">
+                            <!-- Search / Filter header -->
+                            <div class="flex flex-col sm:flex-row gap-2 items-center justify-between">
+                                <div class="relative w-full">
+                                    <input type="text" x-model.debounce.400ms="query" placeholder="Search photos (e.g. Birthday, Tokyo, Concert)..."
+                                           class="w-full pl-9 pr-4 py-2.5 text-xs rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white">
+                                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400" x-text="isCurated ? 'Curated Photos' : 'Search Results'"></span>
+                                    <a href="https://www.pexels.com" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                                        <span>Photos by Pexels</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Selected Preview Banner -->
+                            <template x-if="selectedPhoto">
+                                <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl border border-indigo-200 dark:border-indigo-800 flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <img :src="selectedPhoto.src?.medium || selectedPhoto.src?.small" class="w-16 h-12 rounded-xl object-cover shadow-xs">
+                                        <div>
+                                            <span class="text-xs font-black text-indigo-700 dark:text-indigo-300 block">Selected Background</span>
+                                            <span class="text-[10px] text-gray-600 dark:text-gray-400">Photo by <span class="font-bold" x-text="selectedPhoto.photographer"></span></span>
+                                        </div>
+                                    </div>
+                                    <button type="button" @click="clearSelection()" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-bold px-2">
+                                        Remove
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- Loading Spinner -->
+                            <div x-show="loading" class="py-8 text-center text-xs text-gray-500">
+                                <svg class="animate-spin h-6 w-6 text-indigo-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                <span>Loading photos from Pexels...</span>
+                            </div>
+
+                            <!-- Error Message -->
+                            <div x-show="!loading && errorMessage" class="p-3 bg-rose-50 dark:bg-rose-950/30 text-rose-600 text-xs rounded-xl" x-text="errorMessage"></div>
+
+                            <!-- Photos Grid -->
+                            <div x-show="!loading && photos.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto pr-1">
+                                <template x-for="photo in photos" :key="photo.id">
+                                    <div @click="selectPhoto(photo)"
+                                         :class="selectedPhoto && selectedPhoto.id === photo.id ? 'ring-4 ring-indigo-500 scale-[1.02]' : 'hover:opacity-90'"
+                                         class="relative h-24 rounded-2xl overflow-hidden cursor-pointer group shadow-xs border border-gray-200 dark:border-gray-700 bg-gray-900 transition-all">
+                                        <img :src="photo.src.medium" :alt="photo.alt" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 group-hover:opacity-100 flex items-end p-2 transition-opacity">
+                                            <span class="text-[9px] text-white font-bold truncate block" x-text="photo.photographer"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <div x-show="!loading && photos.length > 0" class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs">
+                                <button type="button" @click="prevPage()" :disabled="page <= 1"
+                                        :class="page <= 1 ? 'opacity-40 cursor-not-allowed' : 'hover:text-indigo-600'"
+                                        class="font-bold text-gray-600 dark:text-gray-300">
+                                    &larr; Previous
+                                </button>
+                                <span class="text-[10px] text-gray-400" x-text="'Page ' + page"></span>
+                                <button type="button" @click="nextPage()"
+                                        class="font-bold text-gray-600 dark:text-gray-300 hover:text-indigo-600">
+                                    Next &rarr;
+                                </button>
                             </div>
                         </div>
                     </div>

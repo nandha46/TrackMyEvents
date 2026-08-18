@@ -24,8 +24,25 @@
             </div>
 
             <!-- Immersive Hero Event Card -->
-            <div class="bg-white dark:bg-gray-900 rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-200/80 dark:border-gray-800 mb-8">
+            @php
+              $isPrivateEvent = ($event->event_type === 'Private') || (is_array($event->tags) && in_array('private', array_map('strtolower', $event->tags)));
+            @endphp
+            <div class="bg-white dark:bg-gray-900 rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-200/80 dark:border-gray-800 mb-8 relative">
                 
+                <!-- Blur Lock Overlay on Single Event View -->
+                @if($isPrivateEvent)
+                  <div x-show="!$store.privateLock.isUnlocked" class="absolute inset-0 z-30 bg-gray-950/80 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center text-white">
+                    <div class="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center mb-4 text-indigo-400">
+                      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h2 class="text-2xl font-black mb-2">This Event is Private & Locked</h2>
+                    <p class="text-xs text-gray-300 max-w-sm mb-6">Enter your 4-digit PIN to unblur and view countdown and notes.</p>
+                    <button type="button" @click="$store.privateLock.openModal()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-xs shadow-lg transition">
+                      Enter 4-Digit PIN &rarr;
+                    </button>
+                  </div>
+                @endif
+
                 <!-- Huge Banner / Gradient Header -->
                 @if($event->is_background_image)
                   <div class="relative w-full h-80 sm:h-96 bg-gray-900 overflow-hidden">
@@ -33,6 +50,11 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/50 to-black/20 flex flex-col justify-end p-6 sm:p-10 md:p-12 text-white">
                       <div class="flex flex-wrap items-center gap-2 mb-3">
                         <span class="px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-extrabold uppercase tracking-wider">{{ $event->event_type }}</span>
+                        @if(is_array($event->tags))
+                          @foreach($event->tags as $tag)
+                            <a href="{{ route('dashboard', ['tag' => $tag]) }}" class="px-3 py-1 bg-indigo-600/70 hover:bg-indigo-600 backdrop-blur-md rounded-full text-xs font-bold text-white transition">#{{ $tag }}</a>
+                          @endforeach
+                        @endif
                         @if($event->is_recurring && $event->recurrence_type !== 'none')
                           <span class="px-3 py-1 bg-indigo-500/90 backdrop-blur-md rounded-full text-xs font-bold text-white uppercase">{{ ucfirst($event->recurrence_type) }}</span>
                         @endif
@@ -42,6 +64,14 @@
                         {{ \Carbon\Carbon::parse($event->event_date)->format('l, F j, Y') }} 
                         @if($event->event_time) &bull; {{ date('h:i A', strtotime($event->event_time)) }} @endif
                       </p>
+                      @if($event->pexels_photographer || $event->pexels_photo_url)
+                        <div class="mt-3">
+                          <a href="{{ $event->pexels_photo_url ?? 'https://www.pexels.com' }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full text-[11px] text-gray-200 hover:text-white transition">
+                            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                            <span>Photo by <strong class="underline">{{ $event->pexels_photographer ?? 'Photographer' }}</strong> on <strong class="underline">Pexels</strong></span>
+                          </a>
+                        </div>
+                      @endif
                     </div>
                   </div>
                 @else

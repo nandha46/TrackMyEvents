@@ -28,13 +28,29 @@ class EventController extends Controller
         $user = $request->user();
         $query = $user->events();
 
-        if ($filter = $request->input('filter')) {
+        $selectedTag = $request->input('tag');
+        $filter = $request->input('filter');
+
+        // Tag filter (primary organization system)
+        if ($selectedTag) {
+            $query->where(function ($q) use ($selectedTag) {
+                $q->whereJsonContains('tags', $selectedTag)
+                  ->orWhere('tags', 'like', "%\"{$selectedTag}\"%")
+                  ->orWhere('tags', 'like', "%{$selectedTag}%")
+                  ->orWhere('event_type', $selectedTag);
+            });
+        } elseif ($filter) {
+            // Legacy/fallback filter support
             if ($filter === 'Past') {
                 $query->where('event_date', '<', now()->toDateString());
             } elseif ($filter === 'Future') {
                 $query->where('event_date', '>=', now()->toDateString());
             } else {
-                $query->where('event_type', $filter);
+                $query->where(function ($q) use ($filter) {
+                    $q->where('event_type', $filter)
+                      ->orWhereJsonContains('tags', $filter)
+                      ->orWhere('tags', 'like', "%\"{$filter}\"%");
+                });
             }
         }
 
@@ -42,18 +58,36 @@ class EventController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('event_name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('tags', 'like', "%{$search}%");
+                  ->orWhere('tags', 'like', "%{$search}%")
+                  ->orWhere('event_type', 'like', "%{$search}%");
             });
         }
 
         $events = $query->orderBy('event_date', 'asc')->paginate(12)->withQueryString();
         $viewMode = $request->input('view', 'cards');
 
+        // Extract all unique tags used across this user's events
+        $allUserEvents = $user->events()->select('tags', 'event_type')->get();
+        $extractedTags = collect();
+        foreach ($allUserEvents as $e) {
+            if (is_array($e->tags)) {
+                foreach ($e->tags as $t) {
+                    if ($t = trim($t)) $extractedTags->push($t);
+                }
+            }
+            if ($e->event_type && !in_array($e->event_type, ['Personal', 'Private'])) {
+                $extractedTags->push($e->event_type);
+            }
+        }
+        $availableTags = $extractedTags->unique()->values()->all();
+
         return view('dashboard', [
             'events' => $events,
             'viewMode' => $viewMode,
             'currentFilter' => $filter,
+            'currentTag' => $selectedTag,
             'currentSearch' => $search,
+            'availableTags' => $availableTags,
         ]);
     }
 
@@ -84,12 +118,30 @@ class EventController extends Controller
 
         $isBackgroundImage = $request->boolean('is_background_image');
         $background = $request->input('background_gradient', 'gradient-1');
+        $pexelsId = $request->input('pexels_id');
+        $pexelsPhotographer = $request->input('pexels_photographer');
+        $pexelsPhotographerUrl = $request->input('pexels_photographer_url');
+        $pexelsPhotoUrl = $request->input('pexels_photo_url');
+        $pexelsDownloadUrl = $request->input('pexels_download_url');
 
+        // Handle uploaded file
         if ($isBackgroundImage && $request->hasFile('background_image')) {
             $image = $request->file('background_image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/backgrounds'), $imageName);
             $background = $imageName;
+            // Clear Pexels info if user uploaded custom photo
+            $pexelsId = null;
+            $pexelsPhotographer = null;
+            $pexelsPhotographerUrl = null;
+            $pexelsPhotoUrl = null;
+        } elseif ($isBackgroundImage && !empty($pexelsDownloadUrl)) {
+            // Handle Pexels image selection
+            $pexelsService = app(\App\Services\PexelsService::class);
+            $savedFilename = $pexelsService->downloadAndSaveLocally($pexelsDownloadUrl, $pexelsId, $validated['event_name']);
+            if ($savedFilename) {
+                $background = $savedFilename;
+            }
         }
 
         $fields = !empty($validated['fields']) ? implode(',', $validated['fields']) : 'days,months,years';
@@ -130,8 +182,12 @@ class EventController extends Controller
             'event_time' => $validated['event_time'] ?? null,
             'event_type' => $validated['event_type'],
             'fields' => $fields,
-            'is_background_image' => $isBackgroundImage && $request->hasFile('background_image'),
+            'is_background_image' => $isBackgroundImage && ($request->hasFile('background_image') || !empty($pexelsDownloadUrl)),
             'background' => $background,
+            'pexels_id' => $pexelsId,
+            'pexels_photographer' => $pexelsPhotographer,
+            'pexels_photographer_url' => $pexelsPhotographerUrl,
+            'pexels_photo_url' => $pexelsPhotoUrl,
             'is_recurring' => $request->boolean('is_recurring'),
             'recurrence_type' => $validated['recurrence_type'] ?? 'none',
             'tags' => $tags,
@@ -173,6 +229,10 @@ class EventController extends Controller
 
         $isBackgroundImage = $request->boolean('is_background_image');
         $background = $event->background;
+        $pexelsId = $event->pexels_id;
+        $pexelsPhotographer = $event->pexels_photographer;
+        $pexelsPhotographerUrl = $event->pexels_photographer_url;
+        $pexelsPhotoUrl = $event->pexels_photo_url;
 
         if ($isBackgroundImage) {
             if ($request->hasFile('background_image')) {
@@ -180,9 +240,31 @@ class EventController extends Controller
                 $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('uploads/backgrounds'), $imageName);
                 $background = $imageName;
+                $pexelsId = null;
+                $pexelsPhotographer = null;
+                $pexelsPhotographerUrl = null;
+                $pexelsPhotoUrl = null;
+            } elseif ($request->filled('pexels_download_url')) {
+                $pexelsService = app(\App\Services\PexelsService::class);
+                $savedFilename = $pexelsService->downloadAndSaveLocally(
+                    $request->input('pexels_download_url'),
+                    $request->input('pexels_id'),
+                    $validated['event_name']
+                );
+                if ($savedFilename) {
+                    $background = $savedFilename;
+                    $pexelsId = $request->input('pexels_id');
+                    $pexelsPhotographer = $request->input('pexels_photographer');
+                    $pexelsPhotographerUrl = $request->input('pexels_photographer_url');
+                    $pexelsPhotoUrl = $request->input('pexels_photo_url');
+                }
             }
         } else {
             $background = $request->input('background_gradient', 'gradient-1');
+            $pexelsId = null;
+            $pexelsPhotographer = null;
+            $pexelsPhotographerUrl = null;
+            $pexelsPhotoUrl = null;
         }
 
         $fields = !empty($validated['fields']) ? implode(',', $validated['fields']) : 'days,months,years';
@@ -223,6 +305,10 @@ class EventController extends Controller
             'fields' => $fields,
             'is_background_image' => $isBackgroundImage,
             'background' => $background,
+            'pexels_id' => $pexelsId,
+            'pexels_photographer' => $pexelsPhotographer,
+            'pexels_photographer_url' => $pexelsPhotographerUrl,
+            'pexels_photo_url' => $pexelsPhotoUrl,
             'is_recurring' => $request->boolean('is_recurring'),
             'recurrence_type' => $validated['recurrence_type'] ?? 'none',
             'tags' => $tags,

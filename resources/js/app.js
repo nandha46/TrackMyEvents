@@ -196,6 +196,153 @@ Alpine.data('batchManager', () => ({
     }
 }));
 
+// Private Lock Store & Manager (5-minute inactivity/unlock timeout)
+document.addEventListener('alpine:init', () => {
+    Alpine.store('privateLock', {
+        isUnlocked: false,
+        remainingSeconds: 0,
+        timer: null,
+        modalOpen: false,
+
+        init() {
+            this.checkUnlockState();
+            this.timer = setInterval(() => this.tick(), 1000);
+        },
+
+        checkUnlockState() {
+            const unlockExpiry = sessionStorage.getItem('private_unlock_expiry');
+            if (unlockExpiry) {
+                const expiryTime = parseInt(unlockExpiry, 10);
+                const now = Date.now();
+                if (expiryTime > now) {
+                    this.isUnlocked = true;
+                    this.remainingSeconds = Math.floor((expiryTime - now) / 1000);
+                } else {
+                    this.lock();
+                }
+            } else {
+                this.isUnlocked = false;
+                this.remainingSeconds = 0;
+            }
+        },
+
+        tick() {
+            if (this.isUnlocked) {
+                if (this.remainingSeconds > 0) {
+                    this.remainingSeconds--;
+                } else {
+                    this.lock();
+                    window.dispatchEvent(new CustomEvent('toast', {
+                        detail: { message: 'Private events auto-locked after 5 minutes.', type: 'info', duration: 3000 }
+                    }));
+                }
+            }
+        },
+
+        unlock(durationSeconds = 300) {
+            this.isUnlocked = true;
+            this.remainingSeconds = durationSeconds;
+            sessionStorage.setItem('private_unlock_expiry', (Date.now() + (durationSeconds * 1000)).toString());
+            this.modalOpen = false;
+        },
+
+        lock() {
+            this.isUnlocked = false;
+            this.remainingSeconds = 0;
+            sessionStorage.removeItem('private_unlock_expiry');
+        },
+
+        toggleLock() {
+            if (this.isUnlocked) {
+                this.lock();
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: { message: 'Private events locked.', type: 'info', duration: 2500 }
+                }));
+            } else {
+                this.openModal();
+            }
+        },
+
+        openModal() {
+            this.modalOpen = true;
+        },
+
+        closeModal() {
+            this.modalOpen = false;
+        },
+
+        get formattedRemaining() {
+            const m = Math.floor(this.remainingSeconds / 60);
+            const s = this.remainingSeconds % 60;
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+    });
+});
+
+Alpine.data('privateLockModal', () => ({
+    pinInput: '',
+    errorMessage: '',
+    loading: false,
+
+    init() {
+        this.$watch('$store.privateLock.modalOpen', (val) => {
+            if (val) {
+                this.pinInput = '';
+                this.errorMessage = '';
+                this.$nextTick(() => {
+                    this.$refs.pinInputField?.focus();
+                });
+            }
+        });
+    },
+
+    async submitPin() {
+        if (this.pinInput.length !== 4) {
+            this.errorMessage = 'Please enter a valid 4-digit PIN.';
+            return;
+        }
+
+        this.loading = true;
+        this.errorMessage = '';
+
+        try {
+            const res = await fetch('/private-events/verify-pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ pin: this.pinInput })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                Alpine.store('privateLock').unlock(300); // 5 minutes
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: { message: data.message || 'Private events unlocked!', type: 'success', duration: 3000 }
+                }));
+            } else {
+                this.errorMessage = data.message || 'Incorrect PIN. Please try again.';
+                this.pinInput = '';
+                this.$nextTick(() => {
+                    this.$refs.pinInputField?.focus();
+                });
+            }
+        } catch (e) {
+            this.errorMessage = 'Network error verifying PIN. Please try again.';
+        } finally {
+            this.loading = false;
+        }
+    }
+}));
+
+// Legacy helper function to open PIN modal globally
+window.openPrivatePinModal = () => {
+    Alpine.store('privateLock')?.openModal();
+};
+
 // Image Dropzone with Preview
 Alpine.data('dropzone', (initialPreview = null) => ({
     previewUrl: initialPreview,
@@ -232,6 +379,84 @@ Alpine.data('dropzone', (initialPreview = null) => ({
         this.previewUrl = null;
         if (this.$refs.fileInput) {
             this.$refs.fileInput.value = '';
+        }
+    }
+}));
+
+// Pexels Image Picker Component
+Alpine.data('pexelsPicker', (initialSelected = {}) => ({
+    query: '',
+    photos: [],
+    page: 1,
+    perPage: 9,
+    totalPages: 1,
+    loading: false,
+    isCurated: true,
+    errorMessage: '',
+    selectedPhoto: initialSelected.id ? initialSelected : null,
+
+    init() {
+        // Watch for query changes from external sources if needed
+        this.$watch('query', (value) => {
+            this.page = 1;
+            this.fetchPhotos();
+        });
+    },
+
+    loadContextualOrCurated(eventName = '') {
+        if (this.photos.length > 0) return;
+        const trimmed = (eventName || '').trim();
+        this.query = trimmed;
+        this.fetchPhotos();
+    },
+
+    async fetchPhotos() {
+        this.loading = true;
+        this.errorMessage = '';
+        try {
+            const params = new URLSearchParams({
+                query: this.query || '',
+                page: this.page,
+                per_page: this.perPage
+            });
+            const res = await fetch(`/pexels/search?${params.toString()}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.success !== false) {
+                this.photos = data.photos || [];
+                this.isCurated = data.is_curated;
+                this.totalPages = Math.ceil((data.total_results || 10) / this.perPage) || 1;
+            } else {
+                this.errorMessage = data.message || 'Unable to load photos from Pexels.';
+            }
+        } catch (e) {
+            this.errorMessage = 'Network error fetching Pexels photos.';
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    selectPhoto(photo) {
+        this.selectedPhoto = photo;
+        window.dispatchEvent(new CustomEvent('toast', {
+            detail: { message: `Selected photo by ${photo.photographer}`, type: 'success', duration: 2500 }
+        }));
+    },
+
+    clearSelection() {
+        this.selectedPhoto = null;
+    },
+
+    nextPage() {
+        this.page++;
+        this.fetchPhotos();
+    },
+
+    prevPage() {
+        if (this.page > 1) {
+            this.page--;
+            this.fetchPhotos();
         }
     }
 }));
