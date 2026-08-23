@@ -59,19 +59,31 @@
 
                 <!-- Multi-Select Checkbox using Flexbox -->
                 <div>
-                  <label class="block text-gray-700">Choose Fields</label>
-                  <div class="flex space-x-4">
-                    <label class="flex items-center space-x-2">
-                      <input type="checkbox" class="form-checkbox" name="fields"/>
-                      <span>Minutes</span>
+                  <label class="block text-gray-700 font-semibold text-xs uppercase mb-1">Choose Fields</label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="years" checked />
+                      <span>Years</span>
                     </label>
-                    <label class="flex items-center space-x-2">
-                      <input type="checkbox" class="form-checkbox" />
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="months" checked />
+                      <span>Months</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="days" checked />
+                      <span>Days</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="hours" checked />
                       <span>Hours</span>
                     </label>
-                    <label class="flex items-center space-x-2">
-                      <input type="checkbox" class="form-checkbox" />
-                      <span>Days</span>
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="minutes" checked />
+                      <span>Minutes</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 text-xs text-gray-700">
+                      <input type="checkbox" class="form-checkbox text-indigo-600 rounded" name="fields[]" value="seconds" checked />
+                      <span>Seconds</span>
                     </label>
                   </div>
                 </div>

@@ -105,31 +105,52 @@
                             <span x-show="isPast" x-cloak>TIME ELAPSED SINCE EVENT</span>
                         </div>
                         
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 max-w-4xl mx-auto text-center">
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="years"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Years</span>
-                            </div>
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="months"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Months</span>
-                            </div>
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="days"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Days</span>
-                            </div>
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white font-mono tracking-tight" x-text="String(hours).padStart(2, '0')"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Hours</span>
-                            </div>
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white font-mono tracking-tight" x-text="String(minutes).padStart(2, '0')"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Minutes</span>
-                            </div>
-                            <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition">
-                                <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-rose-500 font-mono tracking-tight animate-pulse" x-text="String(seconds).padStart(2, '0')"></span>
-                                <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Seconds</span>
-                            </div>
+                        @php
+                            $selectedFields = $event->getSelectedFieldsArray();
+                        @endphp
+                        <div class="flex flex-wrap justify-center gap-3 sm:gap-4 max-w-4xl mx-auto text-center">
+                            @if(in_array('years', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="years"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Years</span>
+                                </div>
+                            @endif
+                            @if(in_array('months', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="months"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Months</span>
+                                </div>
+                            @endif
+                            @if(in_array('weeks', $selectedFields) && !in_array('days', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="weeks"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Weeks</span>
+                                </div>
+                            @endif
+                            @if(in_array('days', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight" x-text="days"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Days</span>
+                                </div>
+                            @endif
+                            @if(in_array('hours', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white font-mono tracking-tight" x-text="String(hours).padStart(2, '0')"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Hours</span>
+                                </div>
+                            @endif
+                            @if(in_array('minutes', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white font-mono tracking-tight" x-text="String(minutes).padStart(2, '0')"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Minutes</span>
+                                </div>
+                            @endif
+                            @if(in_array('seconds', $selectedFields))
+                                <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 transform hover:scale-105 transition min-w-[100px] sm:min-w-[130px] flex-1">
+                                    <span class="block text-3xl sm:text-5xl md:text-6xl font-black text-rose-500 font-mono tracking-tight animate-pulse" x-text="String(seconds).padStart(2, '0')"></span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-500 uppercase mt-1 block">Seconds</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

@@ -86,8 +86,37 @@ class EventTest extends TestCase
             'id' => $event->id,
             'event_name' => 'Updated Title',
             'event_type' => 'Work',
+            'fields' => 'days,months',
         ]);
     }
+
+    public function test_event_custom_field_selection_and_helpers(): void
+    {
+        $user = User::factory()->create();
+        $event = Event::create([
+            'event_name' => 'Countdown Units Test',
+            'event_date' => '2026-11-20',
+            'event_type' => 'Personal',
+            'fields' => 'hours,minutes,seconds',
+            'is_background_image' => false,
+            'background' => 'from-purple-500 to-indigo-600',
+            'user_id' => $user->id,
+        ]);
+
+        $this->assertEquals(['hours', 'minutes', 'seconds'], $event->getSelectedFieldsArray());
+        $this->assertTrue($event->hasField('hours'));
+        $this->assertTrue($event->hasField('minutes'));
+        $this->assertTrue($event->hasField('seconds'));
+        $this->assertFalse($event->hasField('years'));
+
+        $response = $this->actingAs($user)->get('/events/' . $event->id);
+        $response->assertStatus(200);
+        $response->assertSee('Hours');
+        $response->assertSee('Minutes');
+        $response->assertSee('Seconds');
+        $response->assertDontSee('Years</span>', false);
+    }
+
 
     public function test_user_can_delete_event(): void
     {

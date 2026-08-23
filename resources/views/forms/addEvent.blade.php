@@ -77,6 +77,30 @@
                         </div>
                     </div>
 
+                    <!-- Countdown Units Selection -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">Display Countdown Units</label>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-2">Choose which time units appear on your countdown cards and views</p>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                            @foreach([
+                                'years' => 'Years',
+                                'months' => 'Months',
+                                'days' => 'Days',
+                                'hours' => 'Hours',
+                                'minutes' => 'Minutes',
+                                'seconds' => 'Seconds'
+                            ] as $fVal => $fLabel)
+                                <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 hover:border-indigo-400 cursor-pointer transition">
+                                    <input type="checkbox" name="fields[]" value="{{ $fVal }}" 
+                                           {{ in_array($fVal, old('fields', ['years', 'months', 'days', 'hours', 'minutes', 'seconds'])) ? 'checked' : '' }}
+                                           class="w-4 h-4 text-indigo-600 rounded border-gray-300 dark:border-gray-600 focus:ring-indigo-500">
+                                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">{{ $fLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+
                     <!-- Tags Input (Interactive Tag Chips) -->
                     <div x-data="{
                         tagsStr: '{{ old('tags', '') }}',

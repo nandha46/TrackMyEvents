@@ -236,32 +236,41 @@
             @foreach($events as $event)
               @php
                 $isPrivateEvent = ($event->event_type === 'Private') || (is_array($event->tags) && in_array('private', array_map('strtolower', $event->tags)));
+                $selectedFields = $event->getSelectedFieldsArray();
               @endphp
-              <div class="relative group rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 h-80 flex flex-col justify-between border border-gray-200/50 dark:border-gray-700/60 transform hover:-translate-y-1.5"
+              <div class="relative group rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 h-80 flex flex-col justify-between border border-gray-200/50 dark:border-gray-700/60 transform hover:-translate-y-1.5"
+                   :class="cardMenuOpen ? 'z-30' : 'z-10'"
                    x-data="{ cardMenuOpen: false }">
                 
-                <!-- Background Layer -->
-                @if($event->is_background_image)
-                  <img src="{{ asset('uploads/backgrounds/'.$event->background) }}" alt="{{ $event->event_name }}" 
-                       :class="{ 'filter blur-xl scale-110': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }"
-                       class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700" loading="lazy">
-                  <div class="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-black/40 to-black/30"></div>
-                @else
-                  <div :class="{ 'filter blur-md': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }" class="absolute inset-0 bg-gradient-to-br {{ $event->getGradientClasses() }} transition-all"></div>
-                  <div class="absolute inset-0 bg-black/15"></div>
-                @endif
+                <!-- Background Layer (Clipped to rounded card) -->
+                <div class="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                  @if($event->is_background_image)
+                    <img src="{{ asset('uploads/backgrounds/'.$event->background) }}" alt="{{ $event->event_name }}" 
+                         :class="{ 'filter blur-xl scale-110': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-black/40 to-black/30"></div>
+                  @else
+                    <div :class="{ 'filter blur-md': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }" class="w-full h-full bg-gradient-to-br {{ $event->getGradientClasses() }} transition-all"></div>
+                    <div class="absolute inset-0 bg-black/15"></div>
+                  @endif
 
-                <!-- Blur Lock Overlay for Private Event when locked -->
-                @if($isPrivateEvent)
-                  <div x-show="!$store.privateLock.isUnlocked" @click.stop="$store.privateLock.openModal()" class="absolute inset-0 z-20 bg-gray-950/70 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center cursor-pointer transition">
-                    <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-3 text-indigo-400">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  <!-- Blur Lock Overlay for Private Event when locked -->
+                  @if($isPrivateEvent)
+                    <div x-show="!$store.privateLock.isUnlocked" class="absolute inset-0 bg-gray-950/70 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center transition">
+                      <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-3 text-indigo-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      </div>
                     </div>
-                  </div>
+                  @endif
+                </div>
+
+                <!-- Private Lock Click Interceptor -->
+                @if($isPrivateEvent)
+                  <div x-show="!$store.privateLock.isUnlocked" @click.stop="$store.privateLock.openModal()" class="absolute inset-0 z-20 rounded-3xl cursor-pointer"></div>
                 @endif
 
                 <!-- Card Top: Category/Tags Badge, Recurring Badge & Quick Menu -->
-                <div class="relative z-10 p-4 sm:p-5 flex items-center justify-between"
+                <div class="relative z-20 p-4 sm:p-5 flex items-center justify-between"
                      :class="{ 'opacity-20 pointer-events-none': {{ $isPrivateEvent ? 'true' : 'false' }} && !$store.privateLock.isUnlocked }">
                   <div class="flex flex-wrap items-center gap-1.5">
                     <input type="checkbox" :checked="selectedIds.includes({{ $event->id }})" @click.stop="toggleSelect({{ $event->id }})" class="w-4 h-4 text-indigo-600 bg-white/40 border-white/50 rounded-md focus:ring-0 cursor-pointer">
@@ -287,7 +296,7 @@
                     </button>
 
                     <div x-show="cardMenuOpen" @click.away="cardMenuOpen = false" x-cloak
-                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-1.5 text-xs border border-gray-100 dark:border-gray-700 z-30">
+                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-1.5 text-xs border border-gray-100 dark:border-gray-700 z-50">
                       <a href="{{ route('event.show', $event->id) }}" class="block px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700">View Full Details</a>
                       <a href="{{ route('event.edit', $event->id) }}" class="block px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700">Edit Event</a>
                       <a href="{{ route('event.ical', $event->id) }}" class="block px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700">Export iCal (.ics)</a>
@@ -311,11 +320,28 @@
 
                   <!-- Live Real-Time Ticking Countdown on Card -->
                   <div x-data="countdown('{{ $event->getTargetDateTime()->format('Y-m-d') }}', '{{ $event->getTargetDateTime()->format('H:i:s') }}', {{ $event->isPastEvent() ? 'true' : 'false' }})" class="bg-black/30 backdrop-blur-md rounded-2xl p-3 shadow-inner">
-                    <div class="flex items-baseline justify-center gap-1.5 font-mono text-xl sm:text-2xl font-black tracking-tight">
-                      <span x-text="years"></span><span class="text-xs font-sans text-white/70">Y</span>
-                      <span x-text="months"></span><span class="text-xs font-sans text-white/70">M</span>
-                      <span x-text="days"></span><span class="text-xs font-sans text-white/70">D</span>
-                      <span class="text-base sm:text-lg text-white/90" x-text="String(hours).padStart(2,'0') + ':' + String(minutes).padStart(2,'0') + ':' + String(seconds).padStart(2,'0')"></span>
+                    <div class="flex items-baseline justify-center flex-wrap gap-1.5 font-mono text-xl sm:text-2xl font-black tracking-tight">
+                      @if(in_array('years', $selectedFields))
+                        <span><span x-text="years"></span><span class="text-xs font-sans text-white/70">Y</span></span>
+                      @endif
+                      @if(in_array('months', $selectedFields))
+                        <span><span x-text="months"></span><span class="text-xs font-sans text-white/70">M</span></span>
+                      @endif
+                      @if(in_array('weeks', $selectedFields) && !in_array('days', $selectedFields))
+                        <span><span x-text="weeks"></span><span class="text-xs font-sans text-white/70">W</span></span>
+                      @endif
+                      @if(in_array('days', $selectedFields))
+                        <span><span x-text="days"></span><span class="text-xs font-sans text-white/70">D</span></span>
+                      @endif
+                      @if(in_array('hours', $selectedFields) || in_array('minutes', $selectedFields) || in_array('seconds', $selectedFields))
+                        <span class="text-base sm:text-lg text-white/90">
+                          @if(in_array('hours', $selectedFields))<span x-text="String(hours).padStart(2,'0')"></span>@endif<!--
+                          -->@if(in_array('hours', $selectedFields) && in_array('minutes', $selectedFields)):@endif<!--
+                          -->@if(in_array('minutes', $selectedFields))<span x-text="String(minutes).padStart(2,'0')"></span>@endif<!--
+                          -->@if(in_array('minutes', $selectedFields) && in_array('seconds', $selectedFields)):@endif<!--
+                          -->@if(in_array('seconds', $selectedFields))<span x-text="String(seconds).padStart(2,'0')"></span>@endif
+                        </span>
+                      @endif
                     </div>
                     <p class="text-[10px] font-bold uppercase tracking-widest mt-0.5" :class="isPast ? 'text-amber-300' : 'text-emerald-300'" x-text="isPast ? '&LeftAngleBracket; Since &RightAngleBracket;' : '&LeftAngleBracket; Remaining &RightAngleBracket;'"></p>
                   </div>

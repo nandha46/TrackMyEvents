@@ -111,5 +111,5 @@
 - [x] private events should be blurred unless unlocked by entering 4 digit pin. Lock icon on nav bar to enable/disable private events visibility. timeout is 5 minutes
 - [x] instead of categories events should be organized by tags
 
-- [ ] card menu z-index is not working correctly
-- [ ] field selection is not implemented
+- [x] card menu z-index is not working correctly
+- [x] field selection is not implemented

@@ -126,14 +126,14 @@ class ProfileController extends Controller
 
             return response(json_encode($jsonData, JSON_PRETTY_PRINT), 200, [
                 'Content-Type' => 'application/json',
-                'Content-Disposition' => 'attachment; filename="my_events_' . date('Y-m-d') . '.json"',
+                'Content-Disposition' => 'attachment; filename="TellMeWhen_Export_' . date('Y-m-d') . '.json"',
             ]);
         }
 
         // CSV default
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="my_events_' . date('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="TellMeWhen_Export_' . date('Y-m-d') . '.csv"',
         ];
 
         return response()->stream(function () use ($events) {

@@ -44,6 +44,7 @@ Alpine.data('countdown', (targetDateStr, targetTimeStr = '00:00:00', isPastIniti
     isPast: isPastInitial,
     years: 0,
     months: 0,
+    weeks: 0,
     days: 0,
     hours: 0,
     minutes: 0,
@@ -90,8 +91,10 @@ Alpine.data('countdown', (targetDateStr, targetTimeStr = '00:00:00', isPastIniti
         const remainingDaysAfterYears = totalDays % 365;
         this.months = Math.floor(remainingDaysAfterYears / 30);
         this.days = remainingDaysAfterYears % 30;
+        this.weeks = Math.floor(totalDays / 7);
     }
 }));
+
 
 // Toast Notifications System
 Alpine.data('toastSystem', () => ({

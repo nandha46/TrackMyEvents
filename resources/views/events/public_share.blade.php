@@ -80,31 +80,52 @@
                   <span x-show="isPast" x-cloak>TIME SINCE EVENT</span>
                 </p>
                 
-                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5 max-w-lg mx-auto text-center">
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="years"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Years</span>
-                  </div>
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="months"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Months</span>
-                  </div>
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="days"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Days</span>
-                  </div>
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-gray-900 dark:text-white font-mono" x-text="String(hours).padStart(2, '0')"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Hours</span>
-                  </div>
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-gray-900 dark:text-white font-mono" x-text="String(minutes).padStart(2, '0')"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Mins</span>
-                  </div>
-                  <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
-                    <span class="block text-2xl sm:text-3xl font-black text-rose-500 font-mono animate-pulse" x-text="String(seconds).padStart(2, '0')"></span>
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase">Secs</span>
-                  </div>
+                @php
+                  $selectedFields = $event->getSelectedFieldsArray();
+                @endphp
+                <div class="flex flex-wrap justify-center gap-2.5 max-w-lg mx-auto text-center">
+                  @if(in_array('years', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="years"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Years</span>
+                    </div>
+                  @endif
+                  @if(in_array('months', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="months"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Months</span>
+                    </div>
+                  @endif
+                  @if(in_array('weeks', $selectedFields) && !in_array('days', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="weeks"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Weeks</span>
+                    </div>
+                  @endif
+                  @if(in_array('days', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono" x-text="days"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Days</span>
+                    </div>
+                  @endif
+                  @if(in_array('hours', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-gray-900 dark:text-white font-mono" x-text="String(hours).padStart(2, '0')"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Hours</span>
+                    </div>
+                  @endif
+                  @if(in_array('minutes', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-gray-900 dark:text-white font-mono" x-text="String(minutes).padStart(2, '0')"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Mins</span>
+                    </div>
+                  @endif
+                  @if(in_array('seconds', $selectedFields))
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700 min-w-[70px] flex-1">
+                      <span class="block text-2xl sm:text-3xl font-black text-rose-500 font-mono animate-pulse" x-text="String(seconds).padStart(2, '0')"></span>
+                      <span class="text-[10px] font-semibold text-gray-500 uppercase">Secs</span>
+                    </div>
+                  @endif
                 </div>
               </div>
 

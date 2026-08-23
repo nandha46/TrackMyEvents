@@ -56,6 +56,28 @@ class Event extends Model
     }
 
     /**
+     * Get the selected fields as an array (e.g. ['years', 'months', 'days', 'hours', 'minutes', 'seconds']).
+     */
+    public function getSelectedFieldsArray(): array
+    {
+        if (empty($this->fields)) {
+            return ['years', 'months', 'days', 'hours', 'minutes', 'seconds'];
+        }
+
+        $fields = array_map('strtolower', array_map('trim', explode(',', $this->fields)));
+        return !empty($fields) ? $fields : ['years', 'months', 'days', 'hours', 'minutes', 'seconds'];
+    }
+
+    /**
+     * Check if a specific countdown field is selected for this event.
+     */
+    public function hasField(string $field): bool
+    {
+        return in_array(strtolower(trim($field)), $this->getSelectedFieldsArray(), true);
+    }
+
+
+    /**
      * Get the effective target Carbon datetime instance considering recurrence.
      */
     public function getTargetDateTime(): Carbon
